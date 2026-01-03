@@ -2,49 +2,86 @@
 
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
 ![PyTorch](https://img.shields.io/badge/DL-PyTorch-orange)
-![Reinforcement Learning](https://img.shields.io/badge/Method-PPO%20%2B%20LSTM-purple)
+![Reinforcement Learning](https://img.shields.io/badge/Method-PPO%20%2B%20GRU-purple)
 
-> **Short Summary:** This project implements a Reinforcement Learning agent capable of solving complex, partially observable environments (MiniGrid) by using **Curriculum Learning** and **Memory (LSTM)**.
+> **Short Summary:** This project implements a Reinforcement Learning agent capable of solving complex, partially observable environments (MiniGrid) by leveraging **Curriculum Learning** and **Memory (GRU)**.
 
 ## 🎥 The Agent in Action
 
-![Demo des Agenten](assets/Big-multiroom.gif)
+![Main Demo](assets/Big-multiroom.gif)
+*Multiroom Environment*
 
 ## 🧐 The Challenge
 
-The agent has to find the green goal square in maze-like environments:
-1.  **Partial Observability (POMDP):** The agent only sees a tiny cone in front of it (7x7 pixels). It has to "remember" the map.
-2.  **Sparse Rewards:** Finding the goal by accident is nearly impossible in hard levels (Big Multiroom).
-3.  **Memory Requirement:** Without looking back, the agent gets lost.
+The agent has to find the green goal square in maze-like environments. This presents three major difficulties:
 
-## 💡 Conquering Problems
+1.  **Partial Observability (POMDP):** The agent only sees a tiny cone in front of it (7x7 pixels). Standard RL have a hard time here because the immediate observation doesn't reveal the agent's location.
+2.  **Sparse Rewards:** In complex mazes like `Big-Multiroom`, finding the goal by random exploration is statistically nearly impossible.
+3.  **Memory Requirement:** Without looking back or remembering past observations (e.g., keys or doors found), the agent can get stuck in loops.
 
-### 1. Curriculum Learning ( The "School" Method)
-Instead of forcing the agent to solve the hardest maze immediately, we can use Curriculum Learning to split the task into simpler actions.
-This yields many benefits among which are:
-* **Sparse Reward:** In most big mazes the action sequence of the agent has to be extremely specific in order to see any reward at all.
-In an environment Like Big-multiroom the right chain of actions without reward practically never happens, the agent will not ever learn
-a strategy. This is especially true if you consider random seeds in the initialization of the environment, because the observations
-are always something unexpected, something new. Fixed seeds on the other hand, lead to poor generalization over multiple environments 
-of the same kind. By splitting the environment into its subtasks (walking through doors to get to reward) helps assigning reward to actions,
-which might be essential for success, but at least helps boost convergence speed.
+## 💡 Conquering the Problems
 
-* **Partial Observability:** In Partially observable Markov Decission Processes (POMDP's) the crucial assumption of being able to always
-select the perfect action given a state is violated, since an agent can only see 7x7 squares in front of him. I tried to balance this by
-providing the agent with a memory, which he can use to memorize items he picked up as well as where he already was, ..., if he needed it.
+### 1. Curriculum Learning (The "School" Method)
+Instead of forcing the agent to solve the hardest maze immediately, I implemented a curriculum that progressively increases difficulty. 
+* **The Problem:** In large environments with random seeds, the sequence of actions required to find a reward is too long for random exploration. The agent never sees a reward, so gradients remain zero.
+* **The Solution:** By training on sub-tasks first (e.g., just opening a door, then finding a key), the agent learns distinct skills. This dramatically boosts convergence speed and allows the agent to generalize to unseen, larger maps.
 
+### 2. Memory (The "Temporal" Context)
+To handle the **Partial Observability**, I replaced the standard feed-forward network with a **GRU (Gated Recurrent Unit)**.
+* This allows the agent to maintain a hidden state vector, effectively serving as a working memory.
+* The agent can "remember" where it has been and which items (keys/balls) it has already interacted with, enabling long-term planning.
 
-## 📊 Results
+## 📊 Results & Generalization
 
-| Environment Difficulty | Standard PPO Success | **My Curriculum Agent** |
-| :--- | :--- | :--- |
-| Simple Crossing | 80% | **99%** |
-| Memory Maze (Hard) | 12% (Failed) | **92% (Solved)** |
+The combination of Curriculum Learning and Memory yields an extremely versatile agent. The videos below show the agent's progression and its ability to generalize to environments **not seen during training**.
+
+|       Training Phase (Simple)       |     Zero-Shot Test (Complex)      |
+|:-----------------------------------:|:---------------------------------:|
+|  ![Simple Room](assets/Simple.gif)  |    ![Key](assets/Cluster.gif)     |
+|          *The basic atom*           |        *More challenging*         |
+|   ![Simple Room](assets/Key.gif)    |     ![Key](assets/Color.gif)      |
+|          *Unlock with key*          |        *Unlock right door*        |
+| ![Simple Room](assets/Crossing.gif) | ![Key](assets/Huge-Multiroom.gif) |
+|           *Crossing Lava*           |            *Big maze*             |
+> **Note:** The agent was trained on environments with up to 4 rooms. As shown on the right, it successfully generalizes to much larger grid worlds without retraining.
 
 ## 🛠️ Tech Stack
-* **Language:** Python
-* **Library:** PyTorch, Gymnasium (MiniGrid)
-* **Algorithm:** Proximal Policy Optimization (PPO) with Recurrent Neural Networks
+* **Language:** Python 3.8+
+* **Library:** PyTorch, Gymnasium, Minigrid (https://minigrid.farama.org/)
+* **Algorithm:** Proximal Policy Optimization (PPO) with GRU (Recurrent Policy)
 
----
-*Created by [Dein Name] - 2024*
+
+## 🚀 Getting Started
+
+### ⚙️ Global Configuration (Important)
+The project relies on a central configuration file: **`config.py`**. 
+Before running any scripts, please review this file. It acts as the "control center" for the entire project:
+* **Shared Settings:** Both training and evaluation scripts fetch their environment parameters and model checkpoints directly from here.
+* **Customization:** Use this file to switch between environments, model-versions, or adjust hyperparameters.
+
+### 📦 Installation
+Clone the repository and install the dependencies:
+
+```bash
+git clone https://github.com/FelixDobro/Curriculum.git
+cd Curriculum
+pip install -r requirements.txt
+```
+
+### 🏋️ Training
+To start the training loop (which uses the settings from `config.py`), navigate to the training directory and execute the script:
+
+```bash
+cd training
+python Curriculum.py
+```
+
+### 🎬 Evaluation
+To record videos or measure success rates, change to evaluation dir (which uses the settings from `config.py`), navigate to the training directory and execute any script:
+
+```bash
+cd evaluation
+python [script].py
+```
+
+*Created by Felix Dobrovich - 2025*

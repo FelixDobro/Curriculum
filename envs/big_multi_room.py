@@ -8,7 +8,9 @@ from minigrid.minigrid_env import MiniGridEnv
 
 from envs.wrappers import ConvWrapper
 
-from config import CURRICULUM_STEPS
+from config import CURRICULUM_STEPS, CURRICULUM_REWARDS
+
+
 class MultiRoom:
     def __init__(self, top, size, entryDoorPos, exitDoorPos):
         self.top = top
@@ -78,7 +80,7 @@ class BigMultiRoomEnv(MiniGridEnv):
         minNumRooms,
         maxNumRooms,
         min_room_size=4,
-        maxRoomSize=10,
+        maxRoomSize=7,
         max_steps: int | None = None,
         **kwargs,
     ):
@@ -94,7 +96,7 @@ class BigMultiRoomEnv(MiniGridEnv):
 
         mission_space = MissionSpace(mission_func=self._gen_mission)
 
-        self.size = 25
+        self.size = 70
 
         if max_steps is None:
             max_steps = maxNumRooms * 20
@@ -292,17 +294,17 @@ class BigMulti(BigMultiRoomEnv):
             max_steps= CURRICULUM_STEPS["big_multiroom"],
             see_through_walls=False,
             render_mode=render_mode,
-            minNumRooms=12,
-            maxNumRooms=12,
+            minNumRooms=75,
+            maxNumRooms=75,
         )
 
     def step(self, action):
         obs, _, terminated, truncated, info = super().step(action)
 
         if terminated:
-            reward = 1
+            reward = CURRICULUM_REWARDS["goal"]
         else:
-            reward = -0.01
+            reward = CURRICULUM_REWARDS["normal"]
 
         return obs, reward, terminated, truncated, info
 

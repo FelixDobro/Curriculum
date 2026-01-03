@@ -233,15 +233,16 @@ if __name__ == "__main__":
         optimizer.zero_grad()
         mean_return = rewards[mask].mean()
         lp = teacher.update_env(mean_return, env_id)
-
+        goal_reward = CURRICULUM_REWARDS["goal"]
+        success_ratio = (torch.sum((rewards == goal_reward).any(dim=1)) / NUM_ENVS).item() * 100
         if i % 10 == 0:
             env_name = f"{CURRICULUM_NAMING[env_id]}"
             for t_id in teacher.env_dict.keys():
                 name_env = CURRICULUM_NAMING[t_id]
                 tb.add_scalar(f"Teacher_LP/{name_env}", teacher.lps[t_id].item(), global_step=num_episodes)
                 smooth_performance = teacher.env_dict[t_id]["fast_average"]
-                tb.add_scalar(f"Global performance/{name_env}", smooth_performance  , global_step=num_episodes)
-
+                tb.add_scalar(f"Performance/{name_env}", smooth_performance  , global_step=num_episodes)
+            tb.add_scalar(f"Success ratio %/{env_name}",success_ratio, global_step=num_episodes)
             steps = individual_logs[env_id]
             smooth_performance = teacher.env_dict[env_id]["fast_average"]
             individual_logs[env_id] += 1

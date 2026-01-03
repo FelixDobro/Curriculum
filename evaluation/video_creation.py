@@ -17,7 +17,8 @@ def run_gru_episode(model, env):
     done = False
 
     while not done:
-        _, logits,h,_ = model(obs, h)
+        val, logits,h,_ = model(obs, h)
+
         action = Categorical(logits=logits).sample().item()
         obs, _, terminated, truncated, _ = env.step(action)
         obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0).unsqueeze(0)

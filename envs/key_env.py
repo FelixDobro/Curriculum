@@ -25,9 +25,9 @@ class SimpleEnv(DoorKeyEnv):
         obs, _, terminated, truncated, info = super().step(action)
 
         if terminated:
-            reward = 1
+            reward = CURRICULUM_REWARDS["goal"]
         else:
-            reward = -0.01
+            reward = CURRICULUM_REWARDS["normal"]
 
         return obs, reward, terminated, truncated, info
 

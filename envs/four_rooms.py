@@ -1,7 +1,4 @@
-from typing import cast
-import numpy as np
-from gymnasium import ObservationWrapper, spaces
-from minigrid.envs.multiroom import MultiRoomEnv
+from minigrid.envs.fourrooms import FourRoomsEnv
 from config import *
 from envs.wrappers import ConvWrapper
 
@@ -9,14 +6,12 @@ from envs.wrappers import ConvWrapper
 def mission():
     return "Reach the goal"
 
-class SimpleEnv(MultiRoomEnv):
+class SimpleEnv(FourRoomsEnv):
     def __init__(self, render_mode="human"):
         super().__init__(
-            max_steps=CURRICULUM_STEPS["multiroom"],
+            max_steps=CURRICULUM_STEPS["four_rooms"],
             see_through_walls=False,
-            render_mode=render_mode,
-            minNumRooms=2,
-            maxNumRooms=4,
+            render_mode=render_mode
         )
 
     def step(self, action):
@@ -30,8 +25,7 @@ class SimpleEnv(MultiRoomEnv):
         return obs, reward, terminated, truncated, info
 
 
-
-def make_room_env():
+def make_four_rooms_env():
     env = SimpleEnv(render_mode="rgb_array")
     env = ConvWrapper(env)
     return env

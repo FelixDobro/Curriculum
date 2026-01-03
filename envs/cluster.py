@@ -7,7 +7,9 @@ from minigrid.minigrid_env import MiniGridEnv
 
 from envs.wrappers import ConvWrapper
 
-from config import CURRICULUM_STEPS
+from config import CURRICULUM_STEPS, CURRICULUM_REWARDS
+
+
 class ClutteredGoalEnv(MiniGridEnv):
     """
     Ein Raum voller zufälliger Wände/Hindernisse.
@@ -47,12 +49,14 @@ class ClutteredGoalEnv(MiniGridEnv):
 class SimpleClutterEnv(ClutteredGoalEnv):
     def __init__(self, render_mode="human"):
         # n_obstacles steuert, wie "zugemüllt" der Raum ist
-        super().__init__(size=14, n_obstacles=35, render_mode=render_mode)
+        super().__init__(size=14, n_obstacles=20, render_mode=render_mode)
 
     def step(self, action):
         obs, reward, terminated, truncated, info = super().step(action)
-        if terminated: reward = 1
-        else: reward = -0.01
+        if terminated:
+            reward = CURRICULUM_REWARDS["goal"]
+        else:
+            reward = CURRICULUM_REWARDS["normal"]
         return obs, reward, terminated, truncated, info
 
 

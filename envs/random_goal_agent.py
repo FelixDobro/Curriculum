@@ -1,15 +1,10 @@
-from idlelib.config_key import FUNCTION_KEYS
-from typing import cast
-import gymnasium as gym
-import numpy as np
-from gymnasium import ObservationWrapper, spaces
 from minigrid.minigrid_env import MiniGridEnv
 from minigrid.core.grid import Grid
 from minigrid.core.world_object import Goal
 from minigrid.core.mission import MissionSpace
 from minigrid.wrappers import FlatObsWrapper, FullyObsWrapper
 
-from config import CURRICULUM_STEPS
+from config import CURRICULUM_STEPS, CURRICULUM_REWARDS
 from envs.wrappers import ConvWrapper
 
 
@@ -39,9 +34,9 @@ class SimpleEnv(MiniGridEnv):
         obs, _, terminated, truncated, info = super().step(action)
 
         if terminated:
-            reward = 1
+            reward = CURRICULUM_REWARDS["goal"]
         else:
-            reward = -0.01
+            reward = CURRICULUM_REWARDS["normal"]
 
         return obs, reward, terminated, truncated, info
 
