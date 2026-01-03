@@ -35,15 +35,15 @@ To handle the **Partial Observability**, I replaced the standard feed-forward ne
 
 The combination of Curriculum Learning and Memory yields an extremely versatile agent. The videos below show the agent's progression and its ability to generalize to environments **not seen during training**.
 
-|       Training Phase (Simple)       |     Zero-Shot Test (Complex)      |
-|:-----------------------------------:|:---------------------------------:|
-|  ![Simple Room](assets/Simple.gif)  |    ![Key](assets/Cluster.gif)     |
-|          *The basic atom*           |        *More challenging*         |
-|   ![Simple Room](assets/Key.gif)    |     ![Key](assets/Color.gif)      |
-|          *Unlock with key*          |        *Unlock right door*        |
+| | |
+|:---:|:---:|
+| ![Simple Room](assets/Simple.gif) | ![Key](assets/Cluster.gif) |
+| *The basic atom* | *More challenging* |
+| ![Simple Room](assets/Key.gif) | ![Key](assets/Color.gif) |
+| *Unlock with key* | *Unlock right door* |
 | ![Simple Room](assets/Crossing.gif) | ![Key](assets/Huge-Multiroom.gif) |
-|           *Crossing Lava*           |            *Big maze*             |
-> **Note:** The agent was trained on environments with up to 4 rooms. As shown on the right, it successfully generalizes to much larger grid worlds without retraining.
+| *Crossing Lava* | *Big maze* |
+
 
 ## 🛠️ Tech Stack
 * **Language:** Python 3.8+
