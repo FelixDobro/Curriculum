@@ -95,6 +95,7 @@ if __name__ == "__main__":
     learning_model.eval()
     optimizer = torch.optim.Adam(learning_model.parameters(), lr=LEARNING_RATE)
     teacher = Teacher()
+
     vector_env = AsyncVectorEnv(
         [make_meta_env for _ in range(NUM_ENVS)],
         shared_memory=False,
@@ -228,13 +229,15 @@ if __name__ == "__main__":
             combined_loss.backward()
 
             learning_hidden = hidden.detach()
+
         torch.nn.utils.clip_grad_norm_(learning_model.parameters(), 0.1)
         optimizer.step()
         optimizer.zero_grad()
         mean_return = rewards[mask].mean()
         lp = teacher.update_env(mean_return, env_id)
-        goal_reward = CURRICULUM_REWARDS["goal"]
-        success_ratio = (torch.sum((rewards == goal_reward).any(dim=1)) / NUM_ENVS).item() * 100
+        GOAL_REWARD_THRESHOLD = CURRICULUM_REWARDS["goal"] - 0.01
+        has_reached_goal = (rewards >= GOAL_REWARD_THRESHOLD).any(dim=1).float()
+        success_ratio = (torch.sum(has_reached_goal) / NUM_ENVS).item() * 100
         if i % 10 == 0:
             env_name = f"{CURRICULUM_NAMING[env_id]}"
             for t_id in teacher.env_dict.keys():

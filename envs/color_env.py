@@ -1,11 +1,11 @@
 from __future__ import annotations
-from gymnasium import spaces
 from minigrid.core.grid import Grid
 from minigrid.core.mission import MissionSpace
 from minigrid.core.world_object import Goal, Key, Door, Wall
+
 from minigrid.minigrid_env import MiniGridEnv
 
-from config import CURRICULUM_REWARDS
+from config import CURRICULUM_REWARDS, CURRICULUM_STEPS
 from envs.wrappers import ConvWrapper
 import random
 
@@ -13,20 +13,20 @@ import random
 class ColorEnv(MiniGridEnv):
     def __init__(
             self,
-            size=8,
             num_doors=3,
             render_mode="rgb_array",
-            max_steps=100,
+            max_steps=CURRICULUM_STEPS["color"],
             **kwargs,
     ):
         self.num_doors = num_doors
-        self.size = size
+        self.size = 17
+
         mission_space = MissionSpace(mission_func=lambda: "open the correct door")
 
         super().__init__(
             mission_space=mission_space,
-            width=size,
-            height=size,
+            width=self.size,
+            height=self.size,
             max_steps=max_steps,
             render_mode=render_mode,
             see_through_walls=False,
@@ -38,32 +38,46 @@ class ColorEnv(MiniGridEnv):
         self.grid.wall_rect(0, 0, width, height)
 
         colors = ["red", "green", "blue", "purple", "yellow", "grey"]
+        mid = self.size // 2
 
-        door_colors = random.sample(colors, self.num_doors)
+        for j in [5, 11]:
+            for i in range(width):
+                self.grid.set(i, j, Wall())
 
-        target_color = random.choice(door_colors)
+            for i in range(height):
+                self.grid.set(j, i, Wall())
 
-        split_idx = height - 4
+        room_options = [
+            ((5, mid), (1, 6), (4, 5)),
+            ((11, mid), (12, 6), (4, 5)),
+            ((mid, 5), (6, 1), (5, 4)),
+            ((mid, 11), (6, 12), (5, 4))
+        ]
 
-        for i in range(1, width - 1):
-            self.grid.set(i, split_idx, Wall())
+        random.shuffle(room_options)
 
-        door_indices = random.sample(range(1, width - 1), self.num_doors)
+        goal_room = room_options[0]
+        key_room = room_options[1]
+        other_rooms = room_options[2:]
 
-        for idx, color in zip(door_indices, door_colors):
-            self.grid.set(idx, split_idx, Door(color, is_locked=True))
+        target_color = colors.pop(random.randrange(len(colors)))
 
-            if color == target_color:
-                self.grid.set(idx, split_idx + 2, Goal())
-            else:
-                pass
+        door_pos, zone_top, zone_size = goal_room
+        self.grid.set(door_pos[0], door_pos[1], Door(target_color, is_locked=True))
+        self.place_obj(Goal(), top=zone_top, size=zone_size)
 
-        self.place_agent(size=(width, split_idx))
+        door_pos, zone_top, zone_size = key_room
+        door_color = colors.pop(random.randrange(len(colors)))
+        self.grid.set(door_pos[0], door_pos[1], Door(door_color, is_locked=False))
+        self.place_obj(Key(target_color), top=zone_top, size=zone_size)
 
-        key_obj = Key(target_color)
-        self.place_obj(key_obj, size=(width, split_idx))
+        for room in other_rooms:
+            door_pos = room[0]
+            door_color = colors.pop(random.randrange(len(colors)))
+            self.grid.set(door_pos[0], door_pos[1], Door(door_color, is_locked=False))
 
-        self.mission = f"pick up the {target_color} key and open the {target_color} door"
+        self.place_agent(top=(6, 6), size=(5, 5))
+        self.mission = "goal"
 
     def step(self, action):
         obs, _, terminated, truncated, info = super().step(action)
@@ -75,7 +89,8 @@ class ColorEnv(MiniGridEnv):
 
         return obs, reward, terminated, truncated, info
 
+
 def make_color_env():
-    env = ColorEnv(size=8, num_doors=3, render_mode="rgb_array")
+    env = ColorEnv(render_mode="rgb_array")
     env = ConvWrapper(env)
     return env

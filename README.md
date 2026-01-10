@@ -35,14 +35,14 @@ To handle the **Partial Observability**, I replaced the standard feed-forward ne
 
 The combination of Curriculum Learning and Memory yields an extremely versatile agent. The videos below show the agent's progression and its ability to generalize to environments **not seen during training**.
 
-| | |
-|:---:|:---:|
-| ![Simple Room](assets/Simple.gif) | ![Key](assets/Cluster.gif) |
-| *The basic atom* | *More challenging* |
-| ![Simple Room](assets/Key.gif) | ![Key](assets/Color.gif) |
-| *Unlock with key* | *Unlock right door* |
+| |                                   |
+|:---:|:---------------------------------:|
+| ![Simple Room](assets/Simple.gif) |    ![Key](assets/Cluster.gif)     |
+| *The basic atom* |        *More challenging*         |
+| ![Simple Room](assets/Key.gif) |  ![Key](assets/Locked-Room.gif)   |
+| *Unlock with key* |        *Unlock right door*        |
 | ![Simple Room](assets/Crossing.gif) | ![Key](assets/Huge-Multiroom.gif) |
-| *Crossing Lava* | *Big maze* |
+| *Crossing Lava* |            *Big maze*             |
 
 
 ## 🛠️ Tech Stack

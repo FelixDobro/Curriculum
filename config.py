@@ -15,15 +15,15 @@ Path.mkdir(CHECKPOINTS_DIR, exist_ok=True)
 '''All of the envs in this list will be used for Training
 Options are:
 
-["simple", "multiroom", "big_multiroom", "cluster",
+["simple", "multiroom", "big_multiroom", "cluster", "lava_maze",
     "crossing", "dungeon", "key", "locked_room", "four_rooms", "color"]
     
 NOTE: This list is both used for every script not only training
     '''
 
 
-CURRICULUM = ["simple", "multiroom", "cluster",
-    "crossing", "key", "locked_room", "four_rooms", "color"]
+CURRICULUM = ["simple", "multiroom", "cluster", "big_multiroom",
+    "crossing", "key", "locked_room", "four_rooms", "color", "lava_maze"]
 
 
 ## Define the number of steps for each env after which truncation is reaches (only relevant for
@@ -31,6 +31,7 @@ CURRICULUM = ["simple", "multiroom", "cluster",
 CURRICULUM_STEPS = {
     "simple": 20,
     "multiroom": 100,
+    "lava_maze": 125,
     "big_multiroom": 500,
     "cluster": 100,
     "crossing": 75,
@@ -38,7 +39,7 @@ CURRICULUM_STEPS = {
     "key": 75,
     "locked_room": 200,
     "four_rooms": 175,
-    "color": 100
+    "color": 125
 }
 
 
@@ -54,14 +55,14 @@ NUM_ENVS = 12
 
 ## Model checkpoint that will be used for inference scripts
 
-MODEL_VERSION = 139
+MODEL_VERSION = 374
 MODEL_DIR = CHECKPOINTS_DIR / f"model{MODEL_VERSION}.pt"
 
 
 ## Video settings
 
 FPS = 10
-NUM_VIDEOS = 2
+NUM_VIDEOS = 4
 
 
 ## ADVANCED SETUP (You don't need to think about that)
