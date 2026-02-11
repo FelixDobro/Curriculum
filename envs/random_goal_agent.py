@@ -12,7 +12,7 @@ def mission():
     return "Reach the goal"
 
 class SimpleEnv(MiniGridEnv):
-    def __init__(self, size=40, render_mode="rgb_array"):
+    def __init__(self, size=8, render_mode="rgb_array"):
         mission_space = MissionSpace(mission)
         super().__init__(
             mission_space=mission_space,

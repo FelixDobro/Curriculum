@@ -1,4 +1,14 @@
-*.ipynb
-checkpoints/
 
+checkpoints/
+logs/
 videos/
+curves/
+.vscode/
+
+*.pyc
+*.xml
+*.ipynb
+*.iml
+
+
+test.py

@@ -289,7 +289,7 @@ def mission():
     return "Reach the goal"
 
 class BigMulti(BigMultiRoomEnv):
-    def __init__(self, render_mode="human"):
+    def __init__(self, render_mode="rgb_array"):
         super().__init__(
             max_steps= CURRICULUM_STEPS["big_multiroom"],
             see_through_walls=False,

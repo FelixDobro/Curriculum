@@ -9,6 +9,7 @@ import gymnasium as gym
 
 
 
+
 @torch.no_grad()
 def run_gru_episode(model, env):
     obs, _ = env.reset()
@@ -18,29 +19,24 @@ def run_gru_episode(model, env):
 
     while not done:
         val, logits,h,_ = model(obs, h)
-
         action = Categorical(logits=logits).sample().item()
         obs, _, terminated, truncated, _ = env.step(action)
         obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0).unsqueeze(0)
         done = terminated or truncated
 
 
-
 if __name__ == "__main__":
 
     model_props = torch.load(f"{MODEL_DIR}")
     state_dict = model_props["model_state_dict"]
-
     model = PPONet(EMBEDDING_DIM, HIDDEN_DIMS, NUM_ACTIONS)
     model.load_state_dict(state_dict)
     model.eval()
 
-
     curriculum_names, curriculum_functions = map_envs(names=CURRICULUM)
-    print(curriculum_names)
-    print(curriculum_functions)
 
     for env_id, env_function in curriculum_functions.items():
+
         env_name = curriculum_names[env_id]
         video_folder = f"videos/{env_name}"
         env = env_function()
@@ -51,8 +47,6 @@ if __name__ == "__main__":
             fps=FPS
         )
         print(f"Recording: {env_name} dir {video_folder}...")
-
         for i in range(NUM_VIDEOS):
             run_gru_episode(model, env)
-
-        env.close()
+        env.close() 

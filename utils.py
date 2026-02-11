@@ -1,5 +1,5 @@
 from envs.four_rooms import make_four_rooms_env
-from envs.key_env import make_key_env
+from envs.key_env import make_key_env, make_simple_key
 from envs.dungeon_env import make_boss_env
 from envs.crossing import make_lava_crossing_env
 from envs.color_env import make_color_env
@@ -9,6 +9,7 @@ from envs.cluster import make_cluster_env
 from envs.locked_room import make_locked_room
 from envs.random_goal_agent import make_env
 from envs.big_multi_room import make_big_multi_env
+from envs.hard_env import *
 
 env_functions = {
     "simple": make_env,
@@ -18,10 +19,18 @@ env_functions = {
     "crossing": make_lava_crossing_env,
     "dungeon": make_boss_env,
     "key": make_key_env,
+    "simple_key": make_simple_key,
     "locked_room": make_locked_room,
     "color": make_color_env,
     "four_rooms": make_four_rooms_env,
-    "lava_maze": make_lava_maze_env
+    "lava_maze": make_lava_maze_env,
+    "difficulty1": difficulty_1,
+    "difficulty2": difficulty_2,
+    "difficulty3": difficulty_3,
+    "difficulty4": difficulty_4,
+    "difficulty5": difficulty_5,
+    "difficulty6": difficulty_6,
+    "difficulty7": difficulty_7,
 }
 
 def map_envs(names):

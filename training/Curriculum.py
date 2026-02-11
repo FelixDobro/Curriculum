@@ -29,11 +29,11 @@ class Teacher():
             "slow_average": 0.0,
         } for id in CURRICULUM.keys()}
         self.lps = torch.zeros(len(self.env_dict))
-        self.alpha = 0.1
+        self.alpha = 0.2
         self.beta = 0.05
         self.counts = {id: 0 for id in CURRICULUM.keys()}
 
-    def update_env(self, earned_return, env_id):
+    def update_(self, earned_return, env_id):
         env = self.env_dict[env_id]
         env["fast_average"] = earned_return * self.alpha + (1 - self.alpha) * env["fast_average"]
         env["slow_average"] = earned_return * self.beta + (1 - self.beta) * env["slow_average"]
@@ -41,7 +41,7 @@ class Teacher():
 
     def get_env(self):
         chosen_env = None
-        if random.random() < 0.2:
+        if random.random() < 0.1:
             chosen_env = random.choice(list(self.env_dict.keys()))
         else:
             safe_lps = self.lps + 1e-6
@@ -62,7 +62,7 @@ class MetaEnv(gym.Env):
         self.action_space = self.env.action_space
 
     def set_task(self, task_func):
-        self.changed = task_func == self.current_taks
+        self.changed = task_func != self.current_taks
         self.current_taks = task_func
 
     def reset(self, **kwargs):
@@ -82,15 +82,11 @@ if __name__ == "__main__":
 
     tb = SummaryWriter(LOG_DIR, flush_secs=30)
 
-    LOAD_VERSION = 0
-    NUM_ITERATIONS = 100000
-
-
+ 
     EPS = 0.2
     POLICY_COEFF = 1
     VALUE_COEFF = 1
-    ALPHA = 0.005
-    BETA = 0.01
+    BETA = 0.001
     learning_model = PPONet(EMBEDDING_DIM, HIDDEN_DIMS, NUM_ACTIONS).to(DEVICE)
     learning_model.eval()
     optimizer = torch.optim.Adam(learning_model.parameters(), lr=LEARNING_RATE)
@@ -107,9 +103,10 @@ if __name__ == "__main__":
     var = 1
     mean = 0
     num_episodes = 0
+    num_samples = 0
 
-    individual_logs = {key: 0 for key in CURRICULUM.keys()}
 
+    select_count = {key: 0 for key in CURRICULUM.keys()}
     while True:
         i += 1
         num_episodes += NUM_ENVS
@@ -149,8 +146,11 @@ if __name__ == "__main__":
             old_log_probs = torch.stack(old_log_probs).squeeze(-1).permute(1, 0)
 
         first_done = dones.argmax(dim=1)
+        didnt_make_it = first_done == 0
+        needed_steps = first_done.clone()
+        needed_steps[didnt_make_it] = max_steps
+        num_samples += needed_steps.sum()
         has_done = dones.any(dim=1)
-
         lengths = torch.where(has_done, first_done + 1, torch.tensor(max_steps, device=DEVICE))
         mask = torch.arange(max_steps, device=DEVICE).unsqueeze(0) < lengths.unsqueeze(1)
 
@@ -190,11 +190,9 @@ if __name__ == "__main__":
             old_log_probs_chunk = old_log_probs[:, c:c + CHUNK_SIZE]
             dones_chunk = dones[:, c:c + CHUNK_SIZE]
             actions_chunk = actions[:, c:c + CHUNK_SIZE]
-
             extrinsic_chunk = extrinsic_returns[:, c:c + CHUNK_SIZE]
-
+            
             extrinsic_val, policy_logits, hidden, _ = learning_model(state_chunk, learning_hidden)
-
             extrinsic_val = extrinsic_val.squeeze(-1)
 
             value_loss_ext = F.mse_loss(extrinsic_val[chunk_mask], extrinsic_chunk[chunk_mask])
@@ -233,26 +231,30 @@ if __name__ == "__main__":
         torch.nn.utils.clip_grad_norm_(learning_model.parameters(), 0.1)
         optimizer.step()
         optimizer.zero_grad()
-        mean_return = rewards[mask].mean()
+
+        #mean_return = rewards[mask].mean()
+        mean_return = has_done.float().mean()
         lp = teacher.update_env(mean_return, env_id)
-        GOAL_REWARD_THRESHOLD = CURRICULUM_REWARDS["goal"] - 0.01
-        has_reached_goal = (rewards >= GOAL_REWARD_THRESHOLD).any(dim=1).float()
-        success_ratio = (torch.sum(has_reached_goal) / NUM_ENVS).item() * 100
+        
+        env_name = f"{CURRICULUM_NAMING[env_id]}"
+        goal_reward = CURRICULUM_REWARDS["goal"]
+        success_ratio = (torch.sum(has_done) / NUM_ENVS).item() * 100
+        select_count[env_id] += 1
         if i % 10 == 0:
-            env_name = f"{CURRICULUM_NAMING[env_id]}"
             for t_id in teacher.env_dict.keys():
                 name_env = CURRICULUM_NAMING[t_id]
-                tb.add_scalar(f"Teacher_LP/{name_env}", teacher.lps[t_id].item(), global_step=num_episodes)
+                tb.add_scalar(f"Teacher_LP/{name_env}", teacher.lps[t_id].item(), global_step=num_samples)
                 smooth_performance = teacher.env_dict[t_id]["fast_average"]
-                tb.add_scalar(f"Performance/{name_env}", smooth_performance  , global_step=num_episodes)
-            tb.add_scalar(f"Success ratio %/{env_name}",success_ratio, global_step=num_episodes)
-            steps = individual_logs[env_id]
+                tb.add_scalar(f"Performance/{name_env}", smooth_performance  , global_step=num_samples)
+            tb.add_scalar(f"Success ratio %/{env_name}",success_ratio, global_step=num_samples)
+            tb.add_scalar(f"# Selected/{env_name}", select_count[env_id], global_step=num_samples)
+        
             smooth_performance = teacher.env_dict[env_id]["fast_average"]
-            individual_logs[env_id] += 1
 
-            tb.add_scalar("Losses/Policy", np.mean(policy_losses), global_step=num_episodes)
-            tb.add_scalar("Losses/Entropy", np.mean(entropy_losses), global_step=num_episodes)
-            tb.add_scalar("Losses/Extrinsic", np.mean(extrinsic_losses), global_step=num_episodes)
+
+            tb.add_scalar("Losses/Policy", np.mean(policy_losses), global_step=num_samples)
+            tb.add_scalar("Losses/Entropy", np.mean(entropy_losses), global_step=num_samples)
+            tb.add_scalar("Losses/Extrinsic", np.mean(extrinsic_losses), global_step=num_samples)
         if i % UPDATE_PRINT == 0:
             print("Synced")
             duration = time.time() - now
@@ -265,6 +267,6 @@ if __name__ == "__main__":
                     "optimizer_state_dict": optimizer.state_dict(),
                     "iteration": i,
                 },
-                os.path.join(CHECKPOINTS_DIR, f"model{(i // SAVE_EVERY) + LOAD_VERSION}.pt"),
+                os.path.join(CHECKPOINTS_DIR, f"model{(i // SAVE_EVERY)}.pt"),
             )
             print("saved")
