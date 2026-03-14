@@ -14,13 +14,14 @@ def mission():
     return "Reach the goal"
 
 class SimpleEnv(DoorKeyEnv):
-    def __init__(self, render_mode="human", size=8):
+    def __init__(self, render_mode="human", size=8, max_steps=CURRICULUM_STEPS["key"]):
         super().__init__(
-            max_steps=CURRICULUM_STEPS["key"],
+            max_steps=max_steps,
             see_through_walls=False,
             render_mode=render_mode,
             size=size
         )
+
 
     def step(self, action):
         
@@ -35,12 +36,12 @@ class SimpleEnv(DoorKeyEnv):
 
 
 def make_key_env(size=8):
-    env = SimpleEnv(render_mode="rgb_array", size=size)
+    env = SimpleEnv(render_mode="rgb_array", size=size, max_steps=CURRICULUM_STEPS["key"])
     env = ConvWrapper(env)
     return env
 
 def make_simple_key(size=5):
-    env = SimpleEnv(render_mode="rgb_array", size=size)
+    env = SimpleEnv(render_mode="rgb_array", size=size, max_steps=CURRICULUM_STEPS["simple_key"])
     env = ConvWrapper(env)
     return env
 

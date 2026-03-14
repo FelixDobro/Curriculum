@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class PPONet(nn.Module):
+class PPONetCell(nn.Module):
     def __init__(self, embedding_dim, hidden_dim, num_actions):
         super().__init__()
         self.hidden_size = hidden_dim
@@ -17,7 +17,7 @@ class PPONet(nn.Module):
         self.fc = nn.Linear(64 * 7 * 7, embedding_dim)  # 288 -> embedding_dim
 
         # --- Recurrent Core ---
-        self.gru = nn.GRU(embedding_dim, hidden_dim, batch_first=True)
+        self.gru = nn.GRUCell(embedding_dim, hidden_dim)
         self.layer_norm = nn.LayerNorm(hidden_dim)
 
 
@@ -38,35 +38,29 @@ class PPONet(nn.Module):
         )
 
     def forward(self, x, h):
-        B, T, C, H, W = x.shape
-        x = x.reshape(B*T, C, H, W)
+       
         feats = self.conv_layers(x)
-        feats = feats.view(B*T, -1)
+        feats = feats.reshape(feats.size(0), -1)
         feats = F.relu(self.fc(feats))
+        h = self.gru(feats, h)
 
-        feats = feats.view(B, T, -1)
-        out, h = self.gru(feats, h)
+        val_extr = self.extrinsic(h)
+        policy_logits = self.policy_net(h)
 
-
-        val_extr = self.extrinsic(out)
-        policy_logits = self.policy_net(out)
-
-        return val_extr, policy_logits, h, out
+        return val_extr, policy_logits, h
 
     def only_policy(self, x, h):
-        B, T, C, H, W = x.shape
-        x = x.reshape(B*T, C, H, W)
         feats = self.conv_layers(x)
-        feats = feats.view(B*T, -1)
+        feats = feats.reshape(feats.size(0), -1)
         feats = F.relu(self.fc(feats))
+      
+        h = self.gru(feats, h)
+       
+  
+        policy_logits = self.policy_net(h)
 
-        feats = feats.view(B, T, -1)
-        out, h = self.gru(feats, h)
-
-        policy_logits = self.policy_net(out)
-
-        return policy_logits, h, out
+        return policy_logits, h
 
     def init_hidden(self, batch_size=1, device="cpu"):
-        h = torch.zeros(1, batch_size, self.hidden_size, device=device)
+        h = torch.zeros(batch_size, self.hidden_size, device=device)
         return h

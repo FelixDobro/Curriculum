@@ -17,10 +17,11 @@ class SimpleEnv(MiniGridEnv):
         super().__init__(
             mission_space=mission_space,
             grid_size=size,
-            max_steps=CURRICULUM_STEPS["simple"],
+            max_steps=CURRICULUM_STEPS["empty"],
             see_through_walls=False,
             render_mode=render_mode
         )
+  
 
     def _gen_grid(self, width, height):
         self.grid = Grid(width, height)

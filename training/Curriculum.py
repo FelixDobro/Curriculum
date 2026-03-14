@@ -29,11 +29,11 @@ class Teacher():
             "slow_average": 0.0,
         } for id in CURRICULUM.keys()}
         self.lps = torch.zeros(len(self.env_dict))
-        self.alpha = 0.2
-        self.beta = 0.05
+        self.alpha = 0.1
+        self.beta = 0.01
         self.counts = {id: 0 for id in CURRICULUM.keys()}
 
-    def update_(self, earned_return, env_id):
+    def update_env(self, earned_return, env_id):
         env = self.env_dict[env_id]
         env["fast_average"] = earned_return * self.alpha + (1 - self.alpha) * env["fast_average"]
         env["slow_average"] = earned_return * self.beta + (1 - self.beta) * env["slow_average"]
@@ -223,8 +223,8 @@ if __name__ == "__main__":
             entropy_losses.append(entropy.item())
 
             extrinsic_losses.append(value_loss_ext.item())
-
-            combined_loss.backward()
+            num_chunks = max(1,max_steps // CHUNK_SIZE)
+            (combined_loss / num_chunks).backward()
 
             learning_hidden = hidden.detach()
 
