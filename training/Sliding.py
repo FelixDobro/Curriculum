@@ -8,7 +8,7 @@ import math
 import random
 import numpy as np
 import torch.nn.functional as F
-from gymnasium.vector import AsyncVectorEnv
+from gymnasium.vector import AsyncVectorEnv, SyncVectorEnv
 
 from torch.distributions import Categorical
 from torch.utils.tensorboard import SummaryWriter
@@ -71,9 +71,8 @@ if __name__ == "__main__":
     learning_model.eval()
     optimizer = torch.optim.Adam(learning_model.parameters(), lr=LEARNING_RATE)
    
-    vector_env = AsyncVectorEnv(
-        [make_meta_env for _ in range(NUM_ENVS)],
-        shared_memory=False,
+    vector_env = SyncVectorEnv(
+        [make_meta_env for _ in range(NUM_ENVS)]
     )
 
     teacher = Teacher()
