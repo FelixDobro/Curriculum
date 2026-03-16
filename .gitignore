@@ -7,7 +7,7 @@ curves/
 
 *.pyc
 *.xml
-*.ipynb
+
 *.iml
 
 

@@ -6,8 +6,8 @@ import torch
 PROJECT_ROOT = Path(__file__).resolve().parent
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(DEVICE)
-LOG_DIR = PROJECT_ROOT / "logs/locked"
-CHECKPOINTS_DIR = PROJECT_ROOT / "checkpoints/locked"
+LOG_DIR = PROJECT_ROOT / "logs/Sliding"
+CHECKPOINTS_DIR = PROJECT_ROOT / "checkpoints/Sliding"
 Path.mkdir(CHECKPOINTS_DIR, exist_ok=True, parents=True)
 
 
@@ -100,9 +100,9 @@ EMBEDDING_DIM = 512
 
 
 SLIDING_STEPS = 500 
-PERFORMANCE_SAMPLE_SIZE = 10000
+PERFORMANCE_SAMPLE_SIZE = 5000
 WINDOW_SIZE = 1
 MAX_SIZE=20
 MIN_SIZE = 4
-UPDTAE_UP = 1
+UPDTAE_UP = 0.9
 UPDATE_DOWN = 0.5
