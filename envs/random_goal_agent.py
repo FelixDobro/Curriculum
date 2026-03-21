@@ -21,7 +21,12 @@ class SimpleEnv(MiniGridEnv):
             see_through_walls=False,
             render_mode=render_mode
         )
-  
+    
+    def reset(self, **kwargs):
+        obs, info = super().reset(**kwargs)
+        info["success"] = False 
+
+        return obs, info
 
     def _gen_grid(self, width, height):
         self.grid = Grid(width, height)
@@ -36,7 +41,9 @@ class SimpleEnv(MiniGridEnv):
 
         if terminated:
             reward = CURRICULUM_REWARDS["goal"]
+            info["success"] = True
         else:
+            info["success"] = False
             reward = CURRICULUM_REWARDS["normal"]
 
         return obs, reward, terminated, truncated, info

@@ -84,12 +84,18 @@ class ColorEnv(MiniGridEnv):
 
         if terminated:
             reward = CURRICULUM_REWARDS["goal"]
+            info["success"] = True
         else:
+            info["success"] = False
             reward = CURRICULUM_REWARDS["normal"]
 
         return obs, reward, terminated, truncated, info
 
+    def reset(self, **kwargs):
+        obs, info = super().reset(**kwargs)
+        info["success"] = False 
 
+        return obs, info
 def make_color_env():
     env = ColorEnv(render_mode="rgb_array")
     env = ConvWrapper(env)

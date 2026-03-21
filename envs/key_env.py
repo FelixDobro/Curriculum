@@ -29,12 +29,25 @@ class SimpleEnv(DoorKeyEnv):
 
         if terminated:
             reward = CURRICULUM_REWARDS["goal"]
+            info["success"] = True
         else:
+            info["success"] = False
             reward = CURRICULUM_REWARDS["normal"]
 
         return obs, reward, terminated, truncated, info
 
+    def reset(self, **kwargs):
+        obs, info = super().reset(**kwargs)
+        info["success"] = False 
 
+        return obs, info
+
+    def reset(self, **kwargs):
+        obs, info = super().reset(**kwargs)
+        info["success"] = False 
+
+        return obs, info
+        
 def make_key_env(size=8):
     env = SimpleEnv(render_mode="rgb_array", size=size, max_steps=CURRICULUM_STEPS["key"])
     env = ConvWrapper(env)

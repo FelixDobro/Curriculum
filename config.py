@@ -6,8 +6,8 @@ import torch
 PROJECT_ROOT = Path(__file__).resolve().parent
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(DEVICE)
-LOG_DIR = PROJECT_ROOT / "logs/Sliding"
-CHECKPOINTS_DIR = PROJECT_ROOT / "checkpoints/Sliding"
+LOG_DIR = PROJECT_ROOT / "logs/test"
+CHECKPOINTS_DIR = PROJECT_ROOT / "checkpoints/test"
 Path.mkdir(CHECKPOINTS_DIR, exist_ok=True, parents=True)
 
 
@@ -17,43 +17,38 @@ Path.mkdir(CHECKPOINTS_DIR, exist_ok=True, parents=True)
 Options are:
 
 ["empty", "multiroom", "big_multiroom", "cluster", "lava_maze",
-    "crossing", "dungeon", "key", "locked_room", "four_rooms", "color",
-    "difficulty1", "difficulty2", "difficulty3", "difficulty4", "difficulty5", 
-    "difficulty6", "difficulty7", "maze_0", "maze_1", "maze_2", "maze_3"]
+    ,"maze_1", "maze_2", "maze_3"]
     
 NOTE: This list is both used for every script not only training
     '''
 
-
-CURRICULUM = ["empty", "color", "simple_key", "key"]
+CURRICULUM = ["lava_0", "lava_1", "lava_2", "lava_3", "lava_4", 
+"dungeon_1", "empty", "multiroom", "maze_0", "maze_1", "maze_2", "maze_3", "maze_4", "locked_room", "key", "color"]
 
 ## Define the number of steps for each env after which truncation is reaches (only relevant for
 ## elements defined above in the CURRICULUM list)
 CURRICULUM_STEPS = {
-    "empty": 30,
-    "multiroom": 150,
-    "lava_maze": 125,
+    "empty": 50,
+    "multiroom": 250,
     "big_multiroom": 1000,
-    "crossing": 75,
     "dungeon": 1500,
     "key": 250,
     "simple_key": 50,
     "locked_room": 600,
     "four_rooms": 175,
+    "dungeon_1": 1000,
     "color": 300,
-    "maze_0": 200,
-    "maze_1": 300,
-    "maze_2": 600,
-    "maze_3": 800,
-    "maze_4": 1000,
-    "maze_5":1000,
-    "difficulty1": 150,
-    "difficulty2": 400,
-    "difficulty3": 350,
-    "difficulty4": 400,
-    "difficulty5": 400, 
-    "difficulty6":450,
-    "difficulty7":500
+    "lava_0":50,
+    "lava_1":100,
+    "lava_2":125,
+    "lava_3": 200,
+    "lava_4": 250,
+    "maze_0": 150,
+    "maze_1": 250,
+    "maze_2": 360,
+    "maze_3": 450,
+    "maze_4": 600,
+    "maze_5":1000
 }
 
 
@@ -65,20 +60,20 @@ CURRICULUM_REWARDS = {
 
 PPO_EPOCHS = 5
 
-SAVE_EVERY = 100
+SAVE_EVERY = 50
 UPDATE_PRINT = 20
 NUM_ENVS = 12
 
 ## Model checkpoint that will be used for inference scripts
 
-MODEL_VERSION = 63
+MODEL_VERSION = 5
 MODEL_DIR = CHECKPOINTS_DIR / f"model{MODEL_VERSION}.pt"
 
 
 ## Eval settings
 
-FPS = 7
-NUM_VIDEOS = 10
+FPS = 5
+NUM_VIDEOS = 5
 TEMPERATURE = 1
 NUM_EPISODES_EVAL = 20
 

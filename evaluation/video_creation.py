@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from torch.distributions import Categorical
 from models.convs.plainPPO import PPONet
@@ -8,28 +9,30 @@ from config import *
 import gymnasium as gym
 
 
+from models.convs.cell import PPONetCell
 
 
 @torch.no_grad()
 def run_gru_episode(model, env):
     obs, _ = env.reset()
-    obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0).unsqueeze(0)
+    obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
     h = model.init_hidden(1)
-    done = False
-
-    while not done:
-        val, logits,h,_ = model(obs, h)
-        action = Categorical(logits=logits).sample().item()
-        obs, _, terminated, truncated, _ = env.step(action)
-        obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0).unsqueeze(0)
-        done = terminated or truncated
-
+    
+    terminated = False
+    truncated = False
+    while not (terminated or truncated):
+        logits,h = model.only_policy(obs, h)
+        
+        action = Categorical(logits=logits / TEMPERATURE).sample().item()
+        obs, reward, terminated, truncated, _ = env.step(action)
+        
+        obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
 
 if __name__ == "__main__":
 
     model_props = torch.load(f"{MODEL_DIR}")
     state_dict = model_props["model_state_dict"]
-    model = PPONet(EMBEDDING_DIM, HIDDEN_DIMS, NUM_ACTIONS)
+    model = PPONetCell(EMBEDDING_DIM, HIDDEN_DIMS, NUM_ACTIONS)
     model.load_state_dict(state_dict)
     model.eval()
 

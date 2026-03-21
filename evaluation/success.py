@@ -29,8 +29,8 @@ def get_success_ratio(model: PPONet, env, num_episodes):
             logits,h = model.only_policy(obs, h)
             
             action = Categorical(logits=logits / TEMPERATURE).sample().item()
-            obs, reward, terminated, truncated, _ = env.step(action)
-            
+            obs, reward, terminated, truncated, info = env.step(action)
+
             obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
 
         successes += 1 if terminated else 0

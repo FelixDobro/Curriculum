@@ -24,12 +24,18 @@ class SimpleEnv(MultiRoomEnv):
 
         if terminated:
             reward = CURRICULUM_REWARDS["goal"]
+            info["success"] = True
         else:
+            info["success"] = False
             reward = CURRICULUM_REWARDS["normal"]
-
+            
         return obs, reward, terminated, truncated, info
 
+    def reset(self, **kwargs):
+        obs, info = super().reset(**kwargs)
+        info["success"] = False 
 
+        return obs, info
 
 def make_room_env():
     env = SimpleEnv(render_mode="rgb_array")

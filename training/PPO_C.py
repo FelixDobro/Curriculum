@@ -32,7 +32,7 @@ class Teacher():
         } for id in CURRICULUM.keys()}
         self.lps = torch.zeros(len(self.env_dict))
         self.alpha = 0.1
-        self.beta = 0.01
+        self.beta = 0.025
         self.counts = {id: 0 for id in CURRICULUM.keys()}
 
     def update_env(self, earned_return, env_id):
@@ -108,7 +108,7 @@ if __name__ == "__main__":
     while True:
         i += 1
 
-        states, actions, rewards, dones, old_log_probs, values = [], [], [], [], [], []
+        states, actions, rewards, dones, old_log_probs, values, infos = [], [], [], [], [], [], []
         learning_model.eval()
         env_id = teacher.get_env()
         vector_env.call("set_task", CURRICULUM[env_id])
@@ -120,7 +120,7 @@ if __name__ == "__main__":
         
             obs, _ = vector_env.reset() 
             h = learning_model.init_hidden(NUM_ENVS, device=DEVICE)
-            
+
             for t in range(max_steps):
                 ob = torch.tensor(obs, dtype=torch.float32, device=DEVICE)
         
@@ -132,7 +132,8 @@ if __name__ == "__main__":
                 old_log_probs.append(log_prob)
                 
                 states.append(ob)
-                obs, reward, terminated, truncated, _ = vector_env.step(action_num)
+                obs, reward, terminated, truncated, info = vector_env.step(action_num)
+          
                 num_episodes_played += np.sum(terminated | truncated)
 
 
@@ -141,6 +142,7 @@ if __name__ == "__main__":
                 actions.append(action)
                 rewards.append(reward)
                 dones.append(terminated)
+                infos.append(info["success"])
            
     
             states = torch.stack(states)  # (T, num_envs, C,H,W)
@@ -148,6 +150,7 @@ if __name__ == "__main__":
             values = torch.stack(values)
             rewards = torch.tensor(np.array(rewards), dtype=torch.float32, device=DEVICE)  # (T, num_envs)
             dones = torch.tensor(np.array(dones), dtype=torch.long, device=DEVICE)  # (T, num_envs)
+            infos = torch.tensor(np.stack(infos), dtype=torch.float32, device=DEVICE)
             states = states.permute(1, 0, 2, 3, 4)  # (batch, time, C, H, W)
             actions = actions.permute(1, 0)  # (batch, time)
             rewards = rewards.permute(1, 0)  # (batch, time)
@@ -253,15 +256,15 @@ if __name__ == "__main__":
         #mean_return = rewards[mask].mean()
         
         num_samples += max_steps
-        successes += dones.sum().item()
-     
+        successes += infos.sum().item()
+    
         success_ratio = successes / num_episodes_played
         lp = teacher.update_env(success_ratio, env_id)
         successes = 0
         num_episodes_played = 0
         
         env_name = f"{CURRICULUM_NAMING[env_id]}"
-        goal_reward = CURRICULUM_REWARDS["goal"]
+       
         select_count[env_id] += 1
 
      

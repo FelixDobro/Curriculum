@@ -95,11 +95,18 @@ class Maze(MiniGridEnv):
         obs, reward, terminated, truncated, info = super().step(action)
         if terminated:
             reward = CURRICULUM_REWARDS["goal"]
+            info["success"] = True
         else:
+            info["success"] = False
             reward = CURRICULUM_REWARDS["normal"]
         return obs, reward, terminated, truncated, info
 
 
+    def reset(self, **kwargs):
+        obs, info = super().reset(**kwargs)
+        info["success"] = False 
+
+        return obs, info
 
 def make_maze_diff0():
     env = Maze(size=8, n_obstacles=9, max_steps=CURRICULUM_STEPS["maze_0"], render_mode="rgb_array")
@@ -112,17 +119,17 @@ def make_maze_diff1():
     return env
 
 def make_maze_diff2():
-    env = Maze(size=15, n_obstacles=75, max_steps=CURRICULUM_STEPS["maze_2"], render_mode="rgb_array")
+    env = Maze(size=13, n_obstacles=40, max_steps=CURRICULUM_STEPS["maze_2"], render_mode="rgb_array")
     env = ConvWrapper(env)
     return env
 
 def make_maze_diff3():
-    env = Maze(size=20, n_obstacles=100, max_steps=CURRICULUM_STEPS["maze_3"], render_mode="rgb_array")
+    env = Maze(size=15, n_obstacles=60, max_steps=CURRICULUM_STEPS["maze_3"], render_mode="rgb_array")
     env = ConvWrapper(env)
     return env
 
 def make_maze_diff4():
-    env = Maze(size=25, n_obstacles=175, max_steps=CURRICULUM_STEPS["maze_4"], render_mode="rgb_array")
+    env = Maze(size=19, n_obstacles=100, max_steps=CURRICULUM_STEPS["maze_4"], render_mode="rgb_array")
     env = ConvWrapper(env)
     return env
 
