@@ -22,8 +22,10 @@ Options are:
 NOTE: This list is both used for every script not only training
     '''
 
-CURRICULUM = ["lava_0", "lava_1", "lava_2", "lava_3", "lava_4", 
-"dungeon_1", "empty", "multiroom", "maze_0", "maze_1", "maze_2", "maze_3", "maze_4", "locked_room", "key", "color"]
+CURRICULUM = ["lava_0", "lava_1", "lava_2", "lava_3", "lava_4", "memory", "key_dungeon", "easy_memory", "advanced_memory",
+"lava_goal","empty", "multiroom", "locked_room", "color", "obstacles"]
+
+
 
 ## Define the number of steps for each env after which truncation is reaches (only relevant for
 ## elements defined above in the CURRICULUM list)
@@ -31,12 +33,19 @@ CURRICULUM_STEPS = {
     "empty": 50,
     "multiroom": 250,
     "big_multiroom": 1000,
-    "dungeon": 1500,
     "key": 250,
     "simple_key": 50,
     "locked_room": 600,
     "four_rooms": 175,
+    "easy_memory": 200,
+    "memory": 500,
+    "advanced_memory": 1250,
+    "key_dungeon": 250,
+    "obstacles": 200,
+    "lava_goal": 500,
     "dungeon_1": 1000,
+    "dungeon_2": 2000,
+    "dungeon_3": 2000,
     "color": 300,
     "lava_0":50,
     "lava_1":100,
@@ -66,7 +75,7 @@ NUM_ENVS = 12
 
 ## Model checkpoint that will be used for inference scripts
 
-MODEL_VERSION = 5
+MODEL_VERSION = 82
 MODEL_DIR = CHECKPOINTS_DIR / f"model{MODEL_VERSION}.pt"
 
 

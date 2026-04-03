@@ -32,14 +32,15 @@ class Teacher():
         } for id in CURRICULUM.keys()}
         self.lps = torch.zeros(len(self.env_dict))
         self.alpha = 0.1
-        self.beta = 0.025
+        self.beta = 0.05
         self.counts = {id: 0 for id in CURRICULUM.keys()}
 
     def update_env(self, earned_return, env_id):
-        env = self.env_dict[env_id]
+        env = self.env_dict[env_id] 
         env["fast_average"] = earned_return * self.alpha + (1 - self.alpha) * env["fast_average"]
         env["slow_average"] = earned_return * self.beta + (1 - self.beta) * env["slow_average"]
-        self.lps[env_id] = math.fabs(env["fast_average"] - env["slow_average"])
+        lp = math.fabs(env["fast_average"] - env["slow_average"])
+        self.lps[env_id] = lp 
 
     def get_env(self):
         chosen_env = None
@@ -185,11 +186,12 @@ if __name__ == "__main__":
             frozen_advantages = advantages.detach()
 
         ##training
+        learning_model.train()
         for _ in range(PPO_EPOCHS):
             policy_losses = []
             entropy_losses = []
             extrinsic_losses = []
-            learning_model.train()
+        
             learning_hidden = learning_model.init_hidden(NUM_ENVS, DEVICE)
 
             
@@ -255,7 +257,7 @@ if __name__ == "__main__":
 
         #mean_return = rewards[mask].mean()
         
-        num_samples += max_steps
+        num_samples += max_steps * NUM_ENVS
         successes += infos.sum().item()
     
         success_ratio = successes / num_episodes_played

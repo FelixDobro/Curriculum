@@ -129,12 +129,12 @@ def make_maze_diff3():
     return env
 
 def make_maze_diff4():
-    env = Maze(size=19, n_obstacles=100, max_steps=CURRICULUM_STEPS["maze_4"], render_mode="rgb_array")
+    env = Maze(size=17, n_obstacles=88, max_steps=CURRICULUM_STEPS["maze_4"], render_mode="rgb_array")
     env = ConvWrapper(env)
     return env
 
 def make_maze_diff5():
-    env = Maze(size=25, n_obstacles=(25**2)//2.75, max_steps=CURRICULUM_STEPS["maze_5"], render_mode="rgb_array")
+    env = Maze(size=20, n_obstacles=(25**2)//2.75, max_steps=CURRICULUM_STEPS["maze_5"], render_mode="rgb_array")
     env = ConvWrapper(env)
     return env
     
