@@ -6,8 +6,8 @@ import torch
 PROJECT_ROOT = Path(__file__).resolve().parent
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(DEVICE)
-LOG_DIR = PROJECT_ROOT / "logs/test"
-CHECKPOINTS_DIR = PROJECT_ROOT / "checkpoints/test"
+LOG_DIR = PROJECT_ROOT / "logs/locked_b"
+CHECKPOINTS_DIR = PROJECT_ROOT / "checkpoints/locked_b"
 Path.mkdir(CHECKPOINTS_DIR, exist_ok=True, parents=True)
 
 
@@ -22,9 +22,7 @@ Options are:
 NOTE: This list is both used for every script not only training
     '''
 
-CURRICULUM = ["lava_0", "lava_1", "lava_2", "lava_3", "lava_4", "memory", "key_dungeon", "easy_memory", "advanced_memory",
-"lava_goal","empty", "multiroom", "locked_room", "color", "obstacles"]
-
+CURRICULUM = ["locked_room"]
 
 
 ## Define the number of steps for each env after which truncation is reaches (only relevant for
@@ -39,9 +37,15 @@ CURRICULUM_STEPS = {
     "four_rooms": 175,
     "easy_memory": 200,
     "memory": 500,
-    "advanced_memory": 1250,
-    "key_dungeon": 250,
-    "obstacles": 200,
+    "medium_memory": 1000,
+    "advanced_memory": 1500,
+    "key_dungeon": 500,
+    "obstacle_key_simple": 300,
+    "obstacle_key": 500,
+    "obstacles": 300,
+    "obstacles_1": 500,
+    "obstacles_2":750,
+    "combined": 1500,
     "lava_goal": 500,
     "dungeon_1": 1000,
     "dungeon_2": 2000,
@@ -50,8 +54,6 @@ CURRICULUM_STEPS = {
     "lava_0":50,
     "lava_1":100,
     "lava_2":125,
-    "lava_3": 200,
-    "lava_4": 250,
     "maze_0": 150,
     "maze_1": 250,
     "maze_2": 360,
@@ -69,13 +71,15 @@ CURRICULUM_REWARDS = {
 
 PPO_EPOCHS = 5
 
-SAVE_EVERY = 50
+SAVE_EVERY = 64
 UPDATE_PRINT = 20
 NUM_ENVS = 12
+NUM_ROUNDS = 5
+NUM_SAMPLES_PER_ROUND = 10000000
 
 ## Model checkpoint that will be used for inference scripts
 
-MODEL_VERSION = 82
+MODEL_VERSION = 75
 MODEL_DIR = CHECKPOINTS_DIR / f"model{MODEL_VERSION}.pt"
 
 
@@ -84,7 +88,7 @@ MODEL_DIR = CHECKPOINTS_DIR / f"model{MODEL_VERSION}.pt"
 FPS = 5
 NUM_VIDEOS = 5
 TEMPERATURE = 1
-NUM_EPISODES_EVAL = 20
+NUM_EPISODES_EVAL = 100
 
 
 ## ADVANCED SETUP 

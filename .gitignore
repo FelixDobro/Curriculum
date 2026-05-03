@@ -1,6 +1,7 @@
 
 checkpoints/
 logs/
+pictures/
 videos/
 curves/
 .vscode/
@@ -9,6 +10,7 @@ curves/
 *.xml
 
 *.iml
+
 
 
 test.py

@@ -16,6 +16,11 @@ from envs.maze import *
 import time
 
 
+
+SEEDS = [750684,  89426, 790182, 171614, 487489, 434508,  21435, 446232,
+       946635, 464627]
+
+
 env_functions = {
     "empty": make_env,
     "multiroom": make_room_env,
@@ -28,13 +33,17 @@ env_functions = {
     "lava_0": lava_0,
     "lava_1": lava_1,
     "lava_2": lava_2,
-    "lava_3": lava_3,
-    "lava_4": lava_4,
     "key_dungeon": make_key_dungeon,
     "easy_memory": make_easy_memory,
     "memory": make_memory,
+    "medium_memory": make_medium_memory, 
     "advanced_memory": make_advanced_memory,
+    "obstacle_key": make_obstacle_key,
+    "obstacle_key_simple": make_easy_obstacle_key,
     "obstacles": make_obstacles,
+    "obstacles_1": make_obstacles_1,
+    "obstacles_2": make_obstacles_2,
+    "combined": make_combined,
     "lava_goal": make_lava_goal,
     "dungeon_1": make_dungeon_1,
     "dungeon_2": make_dungeon_2,

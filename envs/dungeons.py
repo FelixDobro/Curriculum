@@ -39,6 +39,15 @@ color_door = {
     "yellow": "Y"
 }
 
+def place_objects(objs, grid, start_x, start_y, end_x, end_y, allow=None):
+        for obj in objs:
+            while True:
+                x = random.randint(start_x, end_x)
+                y = random.randint(start_y, end_y)
+                if grid[x,y] == "." or (allow and grid[x,y] in allow):
+                    grid[x,y] = obj
+                    break
+            
 
 def random_key_door():
     color = random.choice(COLOR_NAMES)
@@ -197,51 +206,84 @@ class LavaMazeGoal(Room):
 
 
 class Obstacles(Room):
-    def _place_objects(self, objs, grid, start_x, start_y, end_x, end_y):
-        for obj in objs:
-            while True:
-                x = random.randint(start_x, end_x)
-                y = random.randint(start_y, end_y)
-                if grid[x,y] == ".":
-                    grid[x,y] = obj
-                    break
-            
+    
     def __init__(self):
 
         self.string= """
-        ###########
-        #.........#
-        #.........#
-        #.........#
-        #.........#
-        #.........#
-        ###########
+        ######
+        #....#
+        #....#
+        #....#
+        ######
         """.strip()
 
     def generate(self):        
         grid = np.array([list(row.strip()) for row in self.string.splitlines()])
 
         obj = ["A", "D"]
-        for _ in range(25):
+        for _ in range(8):
             obj.append("-")
 
-        self._place_objects(obj, grid, 1,1,5,9)
+        place_objects(obj, grid, 1,1,3,4)
         return grid
 
+
+
+class Obstacles1(Room):
+
+            
+    def __init__(self):
+
+        self.string= """
+        ##########
+        #........#
+        #........#
+        #........#
+        #........#
+        #........#
+        #........#
+        ##########
+        """.strip()
+
+    def generate(self):        
+        grid = np.array([list(row.strip()) for row in self.string.splitlines()])
+
+        obj = ["A", "D"]
+        for _ in range(30):
+            obj.append("-")
+
+        place_objects(obj, grid, 1,1,6,8)
+        return grid
+
+class Obstacles2(Room):
+
+            
+    def __init__(self):
+
+        self.string= """
+        ##########
+        #--------#
+        #--------#
+        #--------#
+        #--------#
+        #--------#
+        #--------#
+        ##########
+        """.strip()
+
+    def generate(self):        
+        grid = np.array([list(row.strip()) for row in self.string.splitlines()])
+
+        obj = ["A", "D"]
+
+        place_objects(obj, grid, 1,1,7,9, allow=["-"])
+
+        return grid
 
 
 class dungeon_2(Room): 
 
 
-    
-    def _place_objects(self, objs, grid, start_x, start_y, end_x, end_y):
-        for obj in objs:
-            while True:
-                x = random.randint(start_x, end_x)
-                y = random.randint(start_y, end_y)
-                if grid[x,y] == ".":
-                    grid[x,y] = obj
-                    break
             
     def __init__(self):
 
@@ -278,11 +320,11 @@ class dungeon_2(Room):
         
         one_key = keys.pop()
 
-        self._place_objects(keys, second_grid, 4, 7, 10, 20)
-        self._place_objects([one_key], second_grid, 8, 23, 10, 40)
+        place_objects(keys, second_grid, 4, 7, 10, 20)
+        place_objects([one_key], second_grid, 8, 23, 10, 40)
 
         obstacles = ["-" for _ in range(45)]
-        self._place_objects(obstacles, second_grid, 4, 7, 10, 20)
+        place_objects(obstacles, second_grid, 4, 7, 10, 20)
 
      
         return second_grid
@@ -290,17 +332,6 @@ class dungeon_2(Room):
 
 class dungeon_3(Room): 
 
-
-    
-    def _place_objects(self, objs, grid, start_x, start_y, end_x, end_y):
-        for obj in objs:
-            while True:
-                x = random.randint(start_x, end_x)
-                y = random.randint(start_y, end_y)
-                if grid[x,y] == ".":
-                    grid[x,y] = obj
-                    break
-            
 
     def __init__(self):
 
@@ -385,11 +416,11 @@ class dungeon_3(Room):
         
         one_key = keys.pop()
 
-        self._place_objects(keys, second_grid, 4, 7, 10, 20)
-        self._place_objects([one_key], second_grid, 8, 23, 10, 40)
+        place_objects(keys, second_grid, 4, 7, 10, 20)
+        place_objects([one_key], second_grid, 8, 23, 10, 40)
 
         obstacles = ["-" for _ in range(45)]
-        self._place_objects(obstacles, second_grid, 4, 7, 10, 20)
+        place_objects(obstacles, second_grid, 4, 7, 10, 20)
 
         grid = np.vstack((grid,second_grid))
         
@@ -400,63 +431,200 @@ class AdvancedMemory(Room):
     def __init__(self):
 
         self.room_string = """
-        #####################
-        #...................#
-        #...................#
-        #...................#
-        #LLLLLLLLLLLLLLLLLL.#
-        #...................#
-        #...................#
-        #...................#
-        #................####
-        #..........A.....#..#
-        #................+..#
-        #................#..#
-        #................####
-        #................#..#
-        #................+..#
-        #................#..#
-        #........##.###+##### 
-        #........#...#......#
-        #........#.D.#......#
-        #####################
+        ##################
+        #................#
+        #................#
+        #................#
+        #LLLLLLLLLLLLLLL.#
+        #................#
+        #................#
+        #..........A..####
+        #.............+..#
+        #.............####
+        #.............+..#
+        #.....##.##...####
+        #.....#...#......#
+        #.....#.D.#......#
+        ##################
         """.strip()
 
-    def _place_objects(self, objs, grid, start_x, start_y, end_x, end_y):
-        for obj in objs:
-            while True:
-                x = random.randint(start_x, end_x)
-                y = random.randint(start_y, end_y)
-                if grid[x,y] == ".":
-                    grid[x,y] = obj
-                    break
-        
-        
-        return grid
+ 
         
     def generate(self):
         grid = np.array([list(row.strip()) for row in self.room_string.splitlines()])
         
         right_key, right_door = random_key_door()
-        grid[16, 11] = right_door
+        grid[11, 8] = right_door
         keys = [right_key]
         keys.append(random_key_door()[0])
         keys.append(random_key_door()[0])
         random.shuffle(keys)
 
         obst = [keys.pop()]
-        for _ in range(60):
+        for _ in range(33):
             obst.append("-")
 
-        self._place_objects(obst, grid, 5,1,18,7)
+        place_objects(obst, grid, 4,1,12,5)
 
         
         
-        
-        grid[random.choice([9,10,11,13,14,15,17,18]),random.randint(18,19)] = keys[0]
+        grid[random.choice([8,10,12,13]),random.randint(15,16)] = keys[0]
         grid[random.randint(1,3), random.randint(1,3)] = keys[1]
         
         return grid
+
+
+
+class Combined():
+
+    def __init__(self):
+
+        self.room_string = """
+        #######################
+        #A..L....L....L.......#
+        #...L....L....L.......#
+        #...L....L....L.......#
+        #LLLLLLLLLLLLL####+####
+        #.............#.......#
+        #.............#.......#
+        #.............#.......#
+        #.............#.......#
+        #.............##+###+##
+        #.............#...#...#
+        #.............#...#...#
+        #.............#...#...#
+        #.............##+###+##
+        #.............#...#...#
+        #.............#...#...#
+        #.............#...#...#
+        #######################
+        """.strip()
+
+ 
+        
+    def generate(self):
+        grid = np.array([list(row.strip()) for row in self.room_string.splitlines()])
+        
+        grid[np.random.randint(1,4,size=(3,)), [4,9,14]] = "."
+        
+        key, door = random_key_door()
+        grid[6,14] = door
+
+        random_keys = [random_key_door()[0] for _ in range(3)]
+        random_keys.append(key)
+        random.shuffle(random_keys)
+
+        grid[random.randint(10,12), random.randint(15,17)] = random_keys.pop()
+        grid[random.randint(10,12), random.randint(19,21)] = random_keys.pop()
+        grid[random.randint(14,16), random.randint(15,17)] = random_keys.pop()
+        grid[random.randint(14,16), random.randint(19,21)] = random_keys.pop()
+
+        obstacles = ["-" for _ in range(75)]
+        obstacles.append("D")
+        place_objects(obstacles, grid, 5,1,16, 13)
+        return grid
+
+
+class MediumMemory(Room):
+    def __init__(self):
+
+        self.room_string = """
+        #########
+        #.......#
+        #.......#
+        #LLLLLL.#
+        #A......#
+        #.......#
+        #.#.....#
+        #D#.....#
+        #########
+    
+        """.strip()
+
+  
+
+        
+    def generate(self):
+        grid = np.array([list(row.strip()) for row in self.room_string.splitlines()])
+        
+        right_key, right_door = random_key_door()
+        grid[6, 1] = right_door
+        keys = [right_key]
+    
+        keys.append(random_key_door()[0])
+        random.shuffle(keys)
+
+        obst = [keys.pop()]
+        for _ in range(10):
+            obst.append("-")
+
+        place_objects(obst, grid, 4,4,7,7)
+        
+        place_objects(keys, grid, 1,1,2,3)
+        
+        return grid
+
+class ObstacleKey(Room):
+    def __init__(self):
+
+        self.room_string = """
+        #########
+        #.......#
+        #A......#
+        #.......#
+        #.#.....#
+        #D#.....#
+        #########
+    
+        """.strip()
+
+
+    def generate(self):
+        grid = np.array([list(row.strip()) for row in self.room_string.splitlines()])
+        
+        right_key, right_door = random_key_door()
+        grid[4, 1] = right_door
+        keys = [right_key]
+    
+       
+        obst = [keys.pop()]
+        for _ in range(20):
+            obst.append("-")
+
+        place_objects(obst, grid, 1,1,5,7)
+        
+        return grid
+
+
+class ObstacleKeySimple(Room):
+    def __init__(self):
+
+        self.room_string = """
+        ######
+        #....#
+        #A...#
+        #.#..#
+        #D#..#
+        ######
+    
+        """.strip()
+
+    def generate(self):
+        grid = np.array([list(row.strip()) for row in self.room_string.splitlines()])
+        
+        right_key, right_door = random_key_door()
+        grid[3, 1] = right_door
+        keys = [right_key]
+    
+       
+        obst = [keys.pop()]
+        for _ in range(6):
+            obst.append("-")
+
+        place_objects(obst, grid, 1,1,4,4)
+        
+        return grid
+
 
 
 class KeyDungeon(Room): 
@@ -470,14 +638,7 @@ class KeyDungeon(Room):
         #######################
         """.strip()
 
-    def _place_objects(self, objs, grid, start_x, start_y, end_x, end_y):
-        for obj in objs:
-            while True:
-                x = random.randint(start_x, end_x)
-                y = random.randint(start_y, end_y)
-                if grid[x,y] == ".":
-                    grid[x,y] = obj
-                    break
+
             
         
     def generate(self):
@@ -491,18 +652,18 @@ class KeyDungeon(Room):
         right_door_y = 6
         grid[right_door_x, right_door_y] = right_door
         key_1, next_door = random_key_door()
-        self._place_objects([right_key, key_1, "A"], grid, start_x=1, end_x=3, start_y=1, end_y=5)
+        place_objects([right_key, key_1, "A"], grid, start_x=1, end_x=3, start_y=1, end_y=5)
         doors_usable = [next_door]
 
         key_2, door_2 = random_key_door()
         doors_usable.append(door_2)
-        self._place_objects([key_2], grid, start_x=1, end_x=3, start_y=7, end_y=11)
+        place_objects([key_2], grid, start_x=1, end_x=3, start_y=7, end_y=11)
         random.shuffle(doors_usable)
         grid[random.randint(1,3), 12] = doors_usable.pop()
 
         key_3, door_3 = random_key_door()
         doors_usable.append(door_3)
-        self._place_objects([key_3], grid, start_x=1, end_x=3, start_y= 12, end_y=16)
+        place_objects([key_3], grid, start_x=1, end_x=3, start_y= 12, end_y=16)
         random.shuffle(doors_usable)
         grid[random.randint(1,3), 18] = doors_usable.pop()
 
@@ -523,16 +684,6 @@ class MemoryEnv(Room):
         ############################
         """.strip()
 
-    def _place_objects(self, objs, grid, start_x, start_y, end_x, end_y):
-        for obj in objs:
-            while True:
-                x = random.randint(start_x, end_x)
-                y = random.randint(start_y, end_y)
-                if grid[x,y] == ".":
-                    grid[x,y] = obj
-                    break
-            
-
         
     def generate(self):
         grid = np.array([list(row.strip()) for row in self.room_string.splitlines()])
@@ -546,7 +697,7 @@ class MemoryEnv(Room):
         for _ in range(random.randint(2,5)):
             keys.append(random_key_door()[0])
 
-        self._place_objects(keys, grid, 1, 24, 5, 27)    
+        place_objects(keys, grid, 1, 24, 5, 27)    
 
         return grid
 
@@ -564,15 +715,6 @@ class EasyMemoryEnv(Room):
         #########
         """.strip()
 
-    def _place_objects(self, objs, grid, start_x, start_y, end_x, end_y):
-        for obj in objs:
-            while True:
-                x = random.randint(start_x, end_x)
-                y = random.randint(start_y, end_y)
-                if grid[x,y] == ".":
-                    grid[x,y] = obj
-                    break
-            
 
         
     def generate(self):
@@ -587,7 +729,7 @@ class EasyMemoryEnv(Room):
         for _ in range(random.randint(1,3)):
             keys.append(random_key_door()[0])
 
-        self._place_objects(keys, grid, 1, 5, 5, 7)    
+        place_objects(keys, grid, 1, 5, 5, 7)    
 
         return grid
 
@@ -702,7 +844,7 @@ class Dungeon(MiniGridEnv):
                 elif tile == "D":
                     self.grid.set(x,y, Goal())
                 elif tile == "-":
-                    self.grid.set(x,y,Box(color=random.choice(COLOR_NAMES)))
+                    self.grid.set(x,y,Ball(color=random.choice(COLOR_NAMES)))
 
                 ##doors and keys
                 elif tile == "B":
@@ -742,6 +884,18 @@ def make_obstacles():
     env = ConvWrapper(env)
     return env
 
+def make_obstacles_1():
+    env = Dungeon(Obstacles1, CURRICULUM_STEPS["obstacles_1"])
+    env = ConvWrapper(env)
+    return env
+
+def make_obstacles_2():
+    env = Dungeon(Obstacles2, CURRICULUM_STEPS["obstacles_2"])
+    env = ConvWrapper(env)
+    return env
+
+
+
 def make_easy_memory():
     env = Dungeon(EasyMemoryEnv, CURRICULUM_STEPS["easy_memory"])
     env = ConvWrapper(env)
@@ -756,6 +910,22 @@ def make_memory():
 
 def make_advanced_memory():
     env = Dungeon(AdvancedMemory, CURRICULUM_STEPS["advanced_memory"])
+    env = ConvWrapper(env)
+    return env
+
+
+def make_obstacle_key():
+    env = Dungeon(ObstacleKey, CURRICULUM_STEPS["obstacle_key"])
+    env = ConvWrapper(env)
+    return env
+
+def make_easy_obstacle_key():
+    env = Dungeon(ObstacleKeySimple, CURRICULUM_STEPS["obstacle_key_simple"])
+    env = ConvWrapper(env)
+    return env
+
+def make_medium_memory():
+    env = Dungeon(MediumMemory, CURRICULUM_STEPS["medium_memory"])
     env = ConvWrapper(env)
     return env
 
@@ -784,3 +954,10 @@ def make_dungeon_3():
     env = Dungeon(dungeon_3, CURRICULUM_STEPS["dungeon_3"])
     env = ConvWrapper(env)
     return env
+    
+def make_combined():
+    env = Dungeon(Combined, CURRICULUM_STEPS["combined"])
+    env = ConvWrapper(env)
+    return env
+
+

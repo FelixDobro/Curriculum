@@ -54,22 +54,15 @@ def lava_0(rener_mode="rgb_array"):
     env = ConvWrapper(env)
     return env
 
-def lava_1(render_mode="rgb_array"):
-    env = LavaMaze(render_mode=render_mode, size=7, min_crossings=1, max_crossings=2, max_steps=CURRICULUM_STEPS["lava_1"])
-    env = ConvWrapper(env)
-    return env
 
-def lava_2(render_mode="rgb_array"):
+def lava_1(render_mode="rgb_array"):
     env = LavaMaze(render_mode=render_mode, size=9, min_crossings=2, max_crossings=3, max_steps=CURRICULUM_STEPS["lava_2"])
     env = ConvWrapper(env)
     return env
 
-def lava_3(render_mode="rgb_array"):
-    env = LavaMaze(render_mode=render_mode, size=11, min_crossings=2, max_crossings=4, max_steps=CURRICULUM_STEPS["lava_2"])
-    env = ConvWrapper(env)
-    return env
 
-def lava_4(render_mode="rgb_array"):
+
+def lava_2(render_mode="rgb_array"):
     env = LavaMaze(render_mode=render_mode, size=13, min_crossings=3, max_crossings=5, max_steps=CURRICULUM_STEPS["lava_2"])
     env = ConvWrapper(env)
     return env

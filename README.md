@@ -1,4 +1,4 @@
-# 🧠 Curriculum Learning in POMDPs
+# Curriculum Learning in POMDPs
 
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
 ![PyTorch](https://img.shields.io/badge/DL-PyTorch-orange)
@@ -6,20 +6,20 @@
 
 > **Short Summary:** This project implements a Reinforcement Learning agent capable of solving complex, partially observable environments (MiniGrid) by leveraging **Curriculum Learning** and **Memory (GRU)**.
 
-## 🎥 The Agent in Action
+## The Agent in Action
 
 ![Main Demo](assets/Big-multiroom.gif)
 *Multiroom Environment*
 
-## 🧐 The Challenge
+## The Challenge
 
 The agent has to find the green goal square in maze-like environments. This presents three major difficulties:
 
 1.  **Partial Observability (POMDP):** The agent only sees a tiny cone in front of it (7x7 pixels). Standard RL have a hard time here because the immediate observation doesn't reveal the agent's location.
-2.  **Sparse Rewards:** In complex mazes like `Big-Multiroom`, finding the goal by random exploration is statistically nearly impossible.
+2.  **Sparse Rewards:** In complex mazes like Big-Multiroom, finding the goal by random exploration is statistically nearly impossible.
 3.  **Memory Requirement:** Without looking back or remembering past observations (e.g., keys or doors found), the agent can get stuck in loops.
 
-## 💡 Conquering the Problems
+## Conquering the Problems
 
 ### 1. Curriculum Learning (The "School" Method)
 Instead of forcing the agent to solve the hardest maze immediately, I implemented a curriculum that progressively increases difficulty. 
@@ -31,7 +31,7 @@ To handle the **Partial Observability**, I replaced the standard feed-forward ne
 * This allows the agent to maintain a hidden state vector, effectively serving as a working memory.
 * The agent can "remember" where it has been and which items (keys/balls) it has already interacted with, enabling long-term planning.
 
-## 📊 Results & Generalization
+## Results & Generalization
 
 The combination of Curriculum Learning and Memory yields an extremely versatile agent. The videos below show the agent's progression and its ability to generalize to environments **not seen during training**.
 
@@ -45,21 +45,21 @@ The combination of Curriculum Learning and Memory yields an extremely versatile 
 | *Crossing Lava* |            *Big maze*             |
 
 
-## 🛠️ Tech Stack
+## Tech Stack
 * **Language:** Python 3.8+
 * **Library:** PyTorch, Gymnasium, Minigrid (https://minigrid.farama.org/)
 * **Algorithm:** Proximal Policy Optimization (PPO) with GRU (Recurrent Policy)
 
 
-## 🚀 Getting Started
+## Script
 
-### ⚙️ Global Configuration (Important)
-The project relies on a central configuration file: **`config.py`**. 
+### Global Configuration (Important)
+The project relies on a central configuration file: **config.py**. 
 Before running any scripts, please review this file. It acts as the "control center" for the entire project:
 * **Shared Settings:** Both training and evaluation scripts fetch their environment parameters and model checkpoints directly from here.
 * **Customization:** Use this file to switch between environments, model-versions, or adjust hyperparameters.
 
-### 📦 Installation
+### Installation
 Clone the repository and install the dependencies:
 
 ```bash
@@ -68,16 +68,16 @@ cd Curriculum
 pip install -r requirements.txt
 ```
 
-### 🏋️ Training
-To start the training loop (which uses the settings from `config.py`), navigate to the training directory and execute the script:
+### Training
+To start the training loop (which uses the settings from config.py), navigate to the training directory and execute the script:
 
 ```bash
 cd training
-python Curriculum.py
+python PPO_C.py
 ```
 
-### 🎬 Evaluation
-To record videos or measure success rates, change to evaluation dir (which uses the settings from `config.py`), navigate to the training directory and execute any script:
+### Evaluation
+To record videos or measure success rates, change to evaluation dir (which uses the settings from config.py), navigate to the training directory and execute any script:
 
 ```bash
 cd evaluation
