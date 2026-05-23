@@ -6,8 +6,8 @@ import torch
 PROJECT_ROOT = Path(__file__).resolve().parent
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(DEVICE)
-LOG_DIR = PROJECT_ROOT / "logs/locked_b"
-CHECKPOINTS_DIR = PROJECT_ROOT / "checkpoints/locked_b"
+LOG_DIR = PROJECT_ROOT / "logs/sliding_baseline_2"
+CHECKPOINTS_DIR = PROJECT_ROOT / "checkpoints/sliding_baseline_2"
 Path.mkdir(CHECKPOINTS_DIR, exist_ok=True, parents=True)
 
 
@@ -22,7 +22,7 @@ Options are:
 NOTE: This list is both used for every script not only training
     '''
 
-CURRICULUM = ["locked_room"]
+CURRICULUM = ["multiroom"]
 
 
 ## Define the number of steps for each env after which truncation is reaches (only relevant for
@@ -75,7 +75,7 @@ SAVE_EVERY = 64
 UPDATE_PRINT = 20
 NUM_ENVS = 12
 NUM_ROUNDS = 5
-NUM_SAMPLES_PER_ROUND = 10000000
+NUM_SAMPLES_PER_ROUND = 20000000
 
 ## Model checkpoint that will be used for inference scripts
 
@@ -107,10 +107,10 @@ EMBEDDING_DIM = 512
 
 
 
-SLIDING_STEPS = 500 
-PERFORMANCE_SAMPLE_SIZE = 5000
-WINDOW_SIZE = 1
-MAX_SIZE=20
-MIN_SIZE = 4
-UPDTAE_UP = 0.9
-UPDATE_DOWN = 0.5
+SLIDING_STEPS = 500  #Number of steps before env resests
+PERFORMANCE_SAMPLE_SIZE = 2000 # Number of EPISODES before checking wheter to grade down/up
+WINDOW_SIZE = 1 #irrelevant
+MAX_SIZE=30  ##
+MIN_SIZE = 30 ## Refer both to size of env
+UPDTAE_UP = 0.95 # Update Threshold
+UPDATE_DOWN = 0.5 # Update Threshold
