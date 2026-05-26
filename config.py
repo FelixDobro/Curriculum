@@ -22,7 +22,7 @@ Options are:
 NOTE: This list is both used for every script not only training
     '''
 
-CURRICULUM = ["locked_room"]
+CURRICULUM = ["multiroom"]
 
 
 ## Define the number of steps for each env after which truncation is reaches (only relevant for
