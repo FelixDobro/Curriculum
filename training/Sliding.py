@@ -69,8 +69,6 @@ if __name__ == "__main__":
         Path.mkdir(CHECKPOINTS_DIR / Path(f"_run_{run}"), exist_ok=True, parents=True)
 
         tb = SummaryWriter(LOG_DIR / Path(f"_run_{run}"))
-
-
  
         EPS = 0.2
         POLICY_COEFF = 1

@@ -6,8 +6,8 @@ import torch
 PROJECT_ROOT = Path(__file__).resolve().parent
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(DEVICE)
-LOG_DIR = PROJECT_ROOT / "logs/sliding_baseline_2"
-CHECKPOINTS_DIR = PROJECT_ROOT / "checkpoints/sliding_baseline_2"
+LOG_DIR = PROJECT_ROOT / "logs/multiroom_b"
+CHECKPOINTS_DIR = PROJECT_ROOT / "checkpoints/multiroom_b"
 Path.mkdir(CHECKPOINTS_DIR, exist_ok=True, parents=True)
 
 
@@ -22,7 +22,7 @@ Options are:
 NOTE: This list is both used for every script not only training
     '''
 
-CURRICULUM = ["multiroom"]
+CURRICULUM = ["big_multiroom"]
 
 
 ## Define the number of steps for each env after which truncation is reaches (only relevant for
@@ -75,7 +75,7 @@ SAVE_EVERY = 64
 UPDATE_PRINT = 20
 NUM_ENVS = 12
 NUM_ROUNDS = 5
-NUM_SAMPLES_PER_ROUND = 20000000
+NUM_SAMPLES_PER_ROUND = 5000000
 
 ## Model checkpoint that will be used for inference scripts
 

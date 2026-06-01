@@ -294,8 +294,8 @@ class BigMulti(BigMultiRoomEnv):
             max_steps= CURRICULUM_STEPS["big_multiroom"],
             see_through_walls=False,
             render_mode=render_mode,
-            minNumRooms=75,
-            maxNumRooms=75,
+            minNumRooms=50,
+            maxNumRooms=50,
         )
 
     def step(self, action):
