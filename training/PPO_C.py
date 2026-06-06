@@ -43,7 +43,7 @@ class Teacher():
 
     def get_env(self):
         chosen_env = None
-        if random.random() < 0.1:
+        if random.random() < 0.15:
             chosen_env = random.choice(list(self.env_dict.keys()))
         else:
             safe_lps = self.lps + 1e-6
@@ -128,6 +128,7 @@ if __name__ == "__main__":
 
                 states, actions, rewards, dones, old_log_probs, values, infos = [], [], [], [], [], [], []
                 learning_model.eval()
+                
                 env_id = teacher.get_env()
                 vector_env.call("set_task", CURRICULUM[env_id])
                 max_steps = CURRICULUM_STEPS[CURRICULUM_NAMING[env_id]]
@@ -277,7 +278,7 @@ if __name__ == "__main__":
                 num_samples += steps_done
                 pbar.update(steps_done)
                 successes += infos.sum().item()
-            
+                
                 success_ratio = successes / num_episodes_played
                 lp = teacher.update_env(success_ratio, env_id)
                 successes = 0

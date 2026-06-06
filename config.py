@@ -6,8 +6,8 @@ import torch
 PROJECT_ROOT = Path(__file__).resolve().parent
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(DEVICE)
-LOG_DIR = PROJECT_ROOT / "logs/multiroom_b"
-CHECKPOINTS_DIR = PROJECT_ROOT / "checkpoints/multiroom_b"
+LOG_DIR = PROJECT_ROOT / "logs/quick_test"
+CHECKPOINTS_DIR = PROJECT_ROOT / "checkpoints/quick_test"
 Path.mkdir(CHECKPOINTS_DIR, exist_ok=True, parents=True)
 
 
@@ -22,9 +22,8 @@ Options are:
 NOTE: This list is both used for every script not only training
     '''
 
-CURRICULUM = ["big_multiroom"]
-
-
+CURRICULUM = ["empty", "multiroom", "key", "locked_room", "easy_memory", "lava_0", "lava_1", "lava_2", "lava_maze_0",
+ "lava_maze_1", "maze_1", "lava_goal", "lava_maze_key","lava_maze_key_locked", "obstacles_1", "lava_key_obstacles", "memory_obstacles"]
 ## Define the number of steps for each env after which truncation is reaches (only relevant for
 ## elements defined above in the CURRICULUM list)
 CURRICULUM_STEPS = {
@@ -46,14 +45,20 @@ CURRICULUM_STEPS = {
     "obstacles_1": 500,
     "obstacles_2":750,
     "combined": 1500,
-    "lava_goal": 500,
+    "lava_goal": 400,
+    "lava_key_obstacles": 500,
+    "memory_obstacles": 600,
+    "lava_maze_key": 700,
+    "lava_maze_key_locked": 1000,
     "dungeon_1": 1000,
     "dungeon_2": 2000,
     "dungeon_3": 2000,
     "color": 300,
-    "lava_0":50,
-    "lava_1":100,
-    "lava_2":125,
+    "lava_0":100,
+    "lava_1":150,
+    "lava_2":250,
+    "lava_maze_0": 200,
+    "lava_maze_1": 300,
     "maze_0": 150,
     "maze_1": 250,
     "maze_2": 360,
@@ -74,12 +79,12 @@ PPO_EPOCHS = 5
 SAVE_EVERY = 64
 UPDATE_PRINT = 20
 NUM_ENVS = 12
-NUM_ROUNDS = 5
-NUM_SAMPLES_PER_ROUND = 5000000
+NUM_ROUNDS = 3
+NUM_SAMPLES_PER_ROUND = 20000000
 
 ## Model checkpoint that will be used for inference scripts
 
-MODEL_VERSION = 75
+MODEL_VERSION = 65
 MODEL_DIR = CHECKPOINTS_DIR / f"model{MODEL_VERSION}.pt"
 
 

@@ -56,39 +56,35 @@ def random_key_door():
     return key_symbol, door_symbol
 
 
-def maze_backtrack(start_x, start_y, x_end, y_end, grid, destination):
-    lower_bound_x = min(start_x, x_end, destination[0])
-    upper_bound_x = max(start_x, x_end, destination[0])
-    lower_bound_y = min(start_y, y_end, destination[1])
-    upper_bound_y = max(start_y, y_end, destination[1])
+def maze_backtrack(start_x, start_y, x_end, y_end, grid, point_1, point_2):
+    lower_bound_x = min(start_x, x_end)
+    upper_bound_x = max(start_x, x_end)
+    lower_bound_y = min(start_y, y_end)
+    upper_bound_y = max(start_y, y_end)
 
-    seen = set([(start_x, start_y)])
-    stack = [((start_x, start_y), [(start_x, start_y)])]
+    seen = set([point_1])
+    stack = [(point_1, [point_1])]
 
     safe_path = []
 
     while stack:
         (x, y), current_path = stack.pop()
         
-        if (x, y) == destination:
+        if (x, y) == point_2:
             safe_path = current_path
             break
             
         neighbors = [(x + 1, y), (x, y + 1), (x - 1, y), (x, y - 1)]
         random.shuffle(neighbors)
-        
+
         for nx, ny in neighbors:
-            # Jetzt darf er sich in der ganzen Box frei bewegen
             if lower_bound_x <= nx <= upper_bound_x and lower_bound_y <= ny <= upper_bound_y:
                 if (nx, ny) not in seen:
                     seen.add((nx, ny))
                     stack.append(((nx, ny), current_path + [(nx, ny)]))
                 
-    # Pfad freiräumen (Bulldozer-Modus!)
     for x, y in safe_path:
-        # GANZ WICHTIG: Den Schlüssel (destination) nicht plattmachen!
-        if (x, y) != destination:
-            grid[x, y] = "."
+        grid[x, y] = "."
        
 
 class Room:
@@ -235,24 +231,22 @@ class Obstacles1(Room):
     def __init__(self):
 
         self.string= """
-        ##########
-        #........#
-        #........#
-        #........#
-        #........#
-        #........#
-        #........#
-        ##########
+        ########
+        #......#
+        #......#
+        #......#
+        #......#
+        ########
         """.strip()
 
     def generate(self):        
         grid = np.array([list(row.strip()) for row in self.string.splitlines()])
 
         obj = ["A", "D"]
-        for _ in range(30):
+        for _ in range(15):
             obj.append("-")
 
-        place_objects(obj, grid, 1,1,6,8)
+        place_objects(obj, grid, 1,1,4,6)
         return grid
 
 class Obstacles2(Room):
@@ -480,24 +474,19 @@ class Combined():
     def __init__(self):
 
         self.room_string = """
-        #######################
-        #A..L....L....L.......#
-        #...L....L....L.......#
-        #...L....L....L.......#
-        #LLLLLLLLLLLLL####+####
-        #.............#.......#
-        #.............#.......#
-        #.............#.......#
-        #.............#.......#
-        #.............##+###+##
-        #.............#...#...#
-        #.............#...#...#
-        #.............#...#...#
-        #.............##+###+##
-        #.............#...#...#
-        #.............#...#...#
-        #.............#...#...#
-        #######################
+        ##################
+        #A..L...L...L....#
+        #...L...L...L....#
+        #...L...L...L....#
+        #LLLLLLLLLLL##+###
+        #........#.......#
+        #........##+###+##
+        #........#...#...#
+        #........#...#...#
+        #........##+###+##
+        #........#...#...#
+        #........#...#...#
+        ##################
         """.strip()
 
  
@@ -505,24 +494,26 @@ class Combined():
     def generate(self):
         grid = np.array([list(row.strip()) for row in self.room_string.splitlines()])
         
-        grid[np.random.randint(1,4,size=(3,)), [4,9,14]] = "."
+        grid[np.random.randint(1,4,size=(3,)), [4,8,12]] = "."
         
         key, door = random_key_door()
-        grid[6,14] = door
+        grid[5,9] = door
 
         random_keys = [random_key_door()[0] for _ in range(3)]
         random_keys.append(key)
         random.shuffle(random_keys)
 
-        grid[random.randint(10,12), random.randint(15,17)] = random_keys.pop()
-        grid[random.randint(10,12), random.randint(19,21)] = random_keys.pop()
-        grid[random.randint(14,16), random.randint(15,17)] = random_keys.pop()
-        grid[random.randint(14,16), random.randint(19,21)] = random_keys.pop()
+        grid[random.randint(7,8), random.randint(10,12)] = random_keys.pop()
+        grid[random.randint(7,8), random.randint(14,16)] = random_keys.pop()
+        grid[random.randint(10,11), random.randint(10,12)] = random_keys.pop()
+        grid[random.randint(10,11), random.randint(14,16)] = random_keys.pop()
 
-        obstacles = ["-" for _ in range(75)]
+        obstacles = ["-" for _ in range(30)]
         obstacles.append("D")
-        place_objects(obstacles, grid, 5,1,16, 13)
+        place_objects(obstacles, grid, 5,1,11, 8)
         return grid
+
+
 
 
 class MediumMemory(Room):
@@ -540,8 +531,6 @@ class MediumMemory(Room):
         #########
     
         """.strip()
-
-  
 
         
     def generate(self):
@@ -742,9 +731,7 @@ class LavaGoal(Room):
         #.....#......#
         #.....#......#
         #.....#......#
-        #LLLLL#......#
-        #.....#......#
-        #LLLLL#......#
+        #LLLLL########
         #.....#......#
         #LLLLL#......#
         #.....#......#
@@ -759,26 +746,207 @@ class LavaGoal(Room):
         grid[agent_x, random.randint(1,4)] = "A"
         
         key_symbol, door_symbol = random_key_door()
-        random_key_x, random_key_y = random.randint(9,10), random.randint(1,5)
+        random_key_x, random_key_y = random.randint(7,8), random.randint(1,5)
         
         grid[random_key_x, random_key_y] = key_symbol
         y_door = 6
         x_door = random.randint(1,3)
         grid[x_door, y_door] = door_symbol
 
-        lava_gap_x = [4,6,8]
-        lava_gap_y = [random.randint(1,5),random.randint(1,5),random.randint(1,5)]
+        lava_gap_x = [4,6]
+        lava_gap_y = [random.randint(1,5),random.randint(1,5)]
         grid[lava_gap_x, lava_gap_y] = "."
        
      
         
-        goal_x = random.randint(1,10)
+        goal_x = random.randint(1,3)
         goal_y = random.randint(7,12)
         
         grid[goal_x, goal_y] = "D"
         return grid
 
 
+class LavaMazeKey(Room): 
+    def __init__(self):
+
+        self.room_string = """
+        ##################
+        #................#
+        #................#
+        #................#
+        #................#
+        #................#
+        #................#
+        #................#
+        ##################
+        #...........#....#
+        #...........#....#
+        #...........#....#
+        #...........#....#
+        #...........#....#
+        ##################
+        """.strip()
+        
+    def generate(self):
+        grid = np.array([list(row.strip()) for row in self.room_string.splitlines()])
+
+        lavas = ["L" for _ in range(70)]
+        place_objects(lavas, grid, 1,1, 7, 16)
+        
+        maze_x_start, maze_x_end = 1, 7
+        maze_y_start, maze_y_end = 1, 16
+        key, door = random_key_door()
+        agent_pos = (1,1)
+        key_pos = (random.randint(maze_x_start, maze_x_end), random.randint(maze_y_start, maze_y_end))
+        while key_pos == agent_pos: 
+            key_pos = (random.randint(maze_x_start, maze_x_end), random.randint(maze_y_start, maze_y_end))
+        door_pos = (8, random.randint(13,15))
+        door_pos_backtrack = (door_pos[0] - 1, door_pos[1])
+        
+        maze_backtrack(maze_x_start, maze_y_start, maze_x_end, maze_y_end, grid, agent_pos, key_pos)
+        maze_backtrack(maze_x_start, maze_y_start, maze_x_end, maze_y_end, grid, key_pos, door_pos_backtrack)
+        grid[agent_pos[0], agent_pos[1]] = "A"
+        grid[key_pos[0], key_pos[1]] = key
+        grid[door_pos[0], door_pos[1]] = door
+        grid[random.randint(9,13), random.randint(13,15)] = "D"
+    
+        return grid
+
+class LavaMazeKeyLocked(Room): 
+    def __init__(self):
+
+        self.room_string = """
+        ##################
+        #................#
+        #................#
+        #................#
+        #................#
+        #................#
+        #................#
+        #................#
+        ##################
+        #...#...#...#....#
+        #...##+###+##....#
+        #...#............#
+        #...#............#
+        #...#............#
+        #...##+###+##LLLL#
+        #...#...#...#LLLL#
+        ##################
+        """.strip()
+        
+    def generate(self):
+        grid = np.array([list(row.strip()) for row in self.room_string.splitlines()])
+
+        lavas = ["L" for _ in range(70)]
+        place_objects(lavas, grid, 1,1, 7, 16)
+        
+        maze_x_start, maze_x_end = 1, 7
+        maze_y_start, maze_y_end = 1, 16
+        key, door = random_key_door()
+        agent_pos = (1,1)
+        key_pos = (random.randint(maze_x_start, maze_x_end), random.randint(maze_y_start, maze_y_end))
+        while key_pos == agent_pos: 
+            key_pos = (random.randint(maze_x_start, maze_x_end), random.randint(maze_y_start, maze_y_end))
+        door_pos = (8, random.randint(13,15))
+        door_pos_backtrack = (door_pos[0] - 1, door_pos[1])
+        
+        maze_backtrack(maze_x_start, maze_y_start, maze_x_end, maze_y_end, grid, agent_pos, key_pos)
+        maze_backtrack(maze_x_start, maze_y_start, maze_x_end, maze_y_end, grid, key_pos, door_pos_backtrack)
+        grid[agent_pos[0], agent_pos[1]] = "A"
+        grid[key_pos[0], key_pos[1]] = key
+        grid[door_pos[0], door_pos[1]] = door
+    
+        possible_key_spawns = [(9,6), (9,10), (15,6), (15,10)]
+        key_location = random.choice(possible_key_spawns)
+        key, door = random_key_door()
+        grid[key_location[0], key_location[1]] = key
+        grid[12,4] = door
+        grid[random.randint(9,15), random.randint(1,3)] = "D"
+        
+        return grid
+
+class LavaKeyObstacles(Room): 
+    def __init__(self):
+
+        self.room_string = """
+        ##############
+        #.....#......#
+        #.....#......#
+        #.....#......#
+        #LLLLL#......#
+        #.....########
+        #LLLLL#......#
+        #.....#......#
+        #.....#......#
+        ##############
+        """.strip()
+        
+    def generate(self):
+        grid = np.array([list(row.strip()) for row in self.room_string.splitlines()])
+       
+        agent_x = random.randint(1, 2)
+        grid[agent_x, random.randint(1,4)] = "A"
+        
+        key_symbol, door_symbol = random_key_door()
+        random_key_x, random_key_y = random.randint(7,8), random.randint(1,5)
+        
+        grid[random_key_x, random_key_y] = key_symbol
+        y_door = 6
+        x_door = random.randint(1,3)
+        grid[x_door, y_door] = door_symbol
+
+        lava_gap_x = [4,6]
+        lava_gap_y = [random.randint(1,5),random.randint(1,5)]
+        grid[lava_gap_x, lava_gap_y] = "."
+       
+     
+        obstacles = ["-" for _ in range(15)]
+        place_objects(obstacles, grid, 1, 7, 4, 12)
+        
+        grid[5, random.randint(7,12)] = "+"
+        grid[random.randint(6,8), random.randint(7,12)] = "D"
+        
+        return grid
+
+
+
+class MemoryObstacles(Room): 
+    def __init__(self):
+
+        self.room_string = """
+        ################
+        #.......#......#
+        #.......+......#
+        #########......#
+        #...#...#......#
+        #...#...#......#
+        #...#...#......#
+        #...#...#......#
+        #...#...########
+        #...#...#......#
+        #...#...#......#
+        ##+###+##......#
+        #.......#......#
+        #.......#......#
+        ################
+        """.strip()
+        
+    def generate(self):
+        grid = np.array([list(row.strip()) for row in self.room_string.splitlines()])
+       
+        agent_x = random.randint(12, 13)
+        grid[agent_x, random.randint(3,5)] = "A"
+        grid[3, random.choice([2,6])] = "+"
+
+     
+        obstacles = ["-" for _ in range(25)]
+        place_objects(obstacles, grid, 1, 9, 7, 14)
+        
+        grid[8, random.randint(9,12)] = "+"
+        grid[random.randint(10,12), random.randint(9,14)] = "D"
+        
+        return grid
 
 class Dungeon(MiniGridEnv):
 
@@ -894,8 +1062,6 @@ def make_obstacles_2():
     env = ConvWrapper(env)
     return env
 
-
-
 def make_easy_memory():
     env = Dungeon(EasyMemoryEnv, CURRICULUM_STEPS["easy_memory"])
     env = ConvWrapper(env)
@@ -939,6 +1105,36 @@ def make_lava_goal():
     env = Dungeon(LavaGoal, CURRICULUM_STEPS["lava_goal"])
     env = ConvWrapper(env)
     return env
+
+
+def make_lava_goal():
+    env = Dungeon(LavaGoal, CURRICULUM_STEPS["lava_goal"])
+    env = ConvWrapper(env)
+    return env
+
+def lava_key_obstacle():
+    env = Dungeon(LavaKeyObstacles, CURRICULUM_STEPS["lava_key_obstacles"])
+    env = ConvWrapper(env)
+    return env
+
+
+def lava_maze_key():
+    env = Dungeon(LavaMazeKey, CURRICULUM_STEPS["lava_maze_key"])
+    env = ConvWrapper(env)
+    return env
+
+
+def lava_maze_key_locked():
+    env = Dungeon(LavaMazeKeyLocked, CURRICULUM_STEPS["lava_maze_key_locked"])
+    env = ConvWrapper(env)
+    return env
+
+
+def memory_obstacles():
+    env = Dungeon(MemoryObstacles, CURRICULUM_STEPS["memory_obstacles"])
+    env = ConvWrapper(env)
+    return env
+
 
 def make_dungeon_1():
     env = Dungeon(LavaMazeGoal, CURRICULUM_STEPS["dungeon_1"])

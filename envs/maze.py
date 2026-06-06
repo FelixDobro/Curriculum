@@ -1,6 +1,6 @@
 import numpy as np
 from gymnasium import ObservationWrapper, spaces
-from minigrid.core.world_object import Goal, Wall
+from minigrid.core.world_object import Goal, Wall, Lava
 from minigrid.core.constants import COLORS
 from minigrid.core.grid import Grid
 from minigrid.core.mission import MissionSpace
@@ -14,9 +14,10 @@ def _gen_mission():
         return "navigate clutter"
 class Maze(MiniGridEnv):
     
-    def __init__(self, size=40, n_obstacles=700, max_steps=100, **kwargs):
+    def __init__(self, size=40, n_obstacles=700, max_steps=100, lava=False, **kwargs):
         self.n_obstacles = n_obstacles
         mission_space = MissionSpace(mission_func=_gen_mission)
+        self.lava = lava
         super().__init__(
             mission_space=mission_space,
             width=size,
@@ -71,7 +72,7 @@ class Maze(MiniGridEnv):
             
             # Nur setzen, wenn Feld leer UND nicht auf dem Pfad
             if (x, y) not in safe_path and self.grid.get(x, y) is None:
-                self.grid.set(x, y, Wall())
+                self.grid.set(x, y, Wall() if not self.lava else Lava())
                 obstacles_placed += 1
     
         '''for x, y in safe_path:
@@ -92,21 +93,40 @@ class Maze(MiniGridEnv):
 
 
     def step(self, action):
-        obs, reward, terminated, truncated, info = super().step(action)
-        if terminated:
+        obs, _, terminated, truncated, info = super().step(action)
+
+        cell = self.grid.get(*self.agent_pos)
+        if cell is not None and cell.type == "lava":
+            reward = CURRICULUM_REWARDS["lava"]
+            info["success"] = False
+        elif terminated:
             reward = CURRICULUM_REWARDS["goal"]
             info["success"] = True
         else:
-            info["success"] = False
             reward = CURRICULUM_REWARDS["normal"]
-        return obs, reward, terminated, truncated, info
+            info["success"] = False
 
+        return obs, reward, terminated, truncated, info
 
     def reset(self, **kwargs):
         obs, info = super().reset(**kwargs)
         info["success"] = False 
 
         return obs, info
+
+
+
+def lava_maze_0():
+    env = Maze(size=5, n_obstacles=4, max_steps=CURRICULUM_STEPS["lava_maze_0"], lava=True, render_mode="rgb_array")
+    env = ConvWrapper(env)
+    return env
+
+def lava_maze_1():
+    env = Maze(size=7, n_obstacles=15, max_steps=CURRICULUM_STEPS["lava_maze_1"], lava=True, render_mode="rgb_array")
+    env = ConvWrapper(env)
+    return env
+
+
 
 def make_maze_diff0():
     env = Maze(size=8, n_obstacles=9, max_steps=CURRICULUM_STEPS["maze_0"], render_mode="rgb_array")
