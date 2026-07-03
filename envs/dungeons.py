@@ -796,7 +796,7 @@ class LavaMazeKey(Room):
         maze_x_start, maze_x_end = 1, 7
         maze_y_start, maze_y_end = 1, 16
         key, door = random_key_door()
-        agent_pos = (1,1)
+        agent_pos = (4,16)
         key_pos = (random.randint(maze_x_start, maze_x_end), random.randint(maze_y_start, maze_y_end))
         while key_pos == agent_pos: 
             key_pos = (random.randint(maze_x_start, maze_x_end), random.randint(maze_y_start, maze_y_end))
@@ -844,7 +844,7 @@ class LavaMazeKeyLocked(Room):
         maze_x_start, maze_x_end = 1, 7
         maze_y_start, maze_y_end = 1, 16
         key, door = random_key_door()
-        agent_pos = (1,1)
+        agent_pos = (4,16)
         key_pos = (random.randint(maze_x_start, maze_x_end), random.randint(maze_y_start, maze_y_end))
         while key_pos == agent_pos: 
             key_pos = (random.randint(maze_x_start, maze_x_end), random.randint(maze_y_start, maze_y_end))
@@ -1106,11 +1106,6 @@ def make_lava_goal():
     env = ConvWrapper(env)
     return env
 
-
-def make_lava_goal():
-    env = Dungeon(LavaGoal, CURRICULUM_STEPS["lava_goal"])
-    env = ConvWrapper(env)
-    return env
 
 def lava_key_obstacle():
     env = Dungeon(LavaKeyObstacles, CURRICULUM_STEPS["lava_key_obstacles"])

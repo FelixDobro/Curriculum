@@ -6,8 +6,8 @@ import torch
 PROJECT_ROOT = Path(__file__).resolve().parent
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(DEVICE)
-LOG_DIR = PROJECT_ROOT / "logs/quick_test"
-CHECKPOINTS_DIR = PROJECT_ROOT / "checkpoints/quick_test"
+LOG_DIR = PROJECT_ROOT / "logs/big_c"
+CHECKPOINTS_DIR = PROJECT_ROOT / "checkpoints/big_c"
 Path.mkdir(CHECKPOINTS_DIR, exist_ok=True, parents=True)
 
 
@@ -48,8 +48,8 @@ CURRICULUM_STEPS = {
     "lava_goal": 400,
     "lava_key_obstacles": 500,
     "memory_obstacles": 600,
-    "lava_maze_key": 700,
-    "lava_maze_key_locked": 1000,
+    "lava_maze_key": 1000,
+    "lava_maze_key_locked": 1200,
     "dungeon_1": 1000,
     "dungeon_2": 2000,
     "dungeon_3": 2000,
@@ -79,8 +79,9 @@ PPO_EPOCHS = 5
 SAVE_EVERY = 64
 UPDATE_PRINT = 20
 NUM_ENVS = 12
-NUM_ROUNDS = 3
-NUM_SAMPLES_PER_ROUND = 20000000
+START_SEED= 2
+NUM_ROUNDS = 5
+NUM_SAMPLES_PER_ROUND = 30000000
 
 ## Model checkpoint that will be used for inference scripts
 

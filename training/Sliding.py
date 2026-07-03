@@ -60,7 +60,8 @@ def make_meta_env():
 
 if __name__ == "__main__":
 
-    for run, seed in enumerate(SEEDS[:NUM_ROUNDS]):
+    for r, seed in enumerate(SEEDS[START_SEED:NUM_ROUNDS]):
+        run = r + START_SEED
         print(f"Run: {run} \n")
 
         torch.manual_seed(seed)
