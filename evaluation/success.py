@@ -40,7 +40,7 @@ def get_success_ratio(model: PPONet, env, num_episodes):
 
 if __name__ == "__main__":
 
-    model_props = torch.load(f"{MODEL_DIR}")
+    model_props = torch.load(f"{MODEL_DIR}", map_location=DEVICE)
     state_dict = model_props["model_state_dict"]
 
     model = PPONetCell(EMBEDDING_DIM, HIDDEN_DIMS, NUM_ACTIONS)

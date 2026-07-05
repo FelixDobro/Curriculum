@@ -3,6 +3,7 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from torch.distributions import Categorical
+from tqdm import tqdm
 from models.convs.plainPPO import PPONet
 from utils import *
 from config import *
@@ -24,13 +25,13 @@ def run_gru_episode(model, env):
         logits,h = model.only_policy(obs, h)
         
         action = Categorical(logits=logits / TEMPERATURE).sample().item()
-        obs, reward, terminated, truncated, _ = env.step(action)
+        obs, _, terminated, truncated, _ = env.step(action)
         
         obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
 
 if __name__ == "__main__":
 
-    model_props = torch.load(f"{MODEL_DIR}")
+    model_props = torch.load(f"{MODEL_DIR}", map_location=DEVICE)
     state_dict = model_props["model_state_dict"]
     model = PPONetCell(EMBEDDING_DIM, HIDDEN_DIMS, NUM_ACTIONS)
     model.load_state_dict(state_dict)
@@ -38,7 +39,7 @@ if __name__ == "__main__":
 
     curriculum_names, curriculum_functions = map_envs(names=CURRICULUM)
 
-    for env_id, env_function in curriculum_functions.items():
+    for env_id, env_function in tqdm(curriculum_functions.items()):
 
         env_name = curriculum_names[env_id]
         video_folder = f"videos/{env_name}"
