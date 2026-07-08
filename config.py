@@ -6,8 +6,8 @@ import torch
 PROJECT_ROOT = Path(__file__).resolve().parent
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(DEVICE)
-LOG_DIR = PROJECT_ROOT / "logs/multiroom_c"
-CHECKPOINTS_DIR = PROJECT_ROOT / "checkpoints/multiroom_c"
+LOG_DIR = PROJECT_ROOT / "logs/big_c"
+CHECKPOINTS_DIR = PROJECT_ROOT / "checkpoints/big_c"
 Path.mkdir(CHECKPOINTS_DIR, exist_ok=True, parents=True)
 
 
@@ -22,16 +22,17 @@ Options are:
 NOTE: This list is both used for every script not only training
     '''
 
-CURRICULUM = ["empty", "multiroom", "key", "locked_room", "easy_memory", "lava_0", "lava_1", "lava_2", "lava_maze_0",
+CURRICULUM = ["empty", "multiroom", "key", "locked_room", "easy_memory", "lava_0", "lava_1", "lava_2", "lava_maze_0", "big_multiroom",
  "lava_maze_1", "maze_1", "lava_goal", "lava_maze_key","lava_maze_key_locked", "obstacles_1", "lava_key_obstacles", "memory_obstacles"]
 
-CURRICULUM = ["big_multiroom"]
+
+
 ## Define the number of steps for each env after which truncation is reaches (only relevant for
 ## elements defined above in the CURRICULUM list)
 CURRICULUM_STEPS = {
     "empty": 50,
     "multiroom": 250,
-    "big_multiroom": 1000,
+    "big_multiroom": 1500,
     "key": 250,
     "simple_key": 50,
     "locked_room": 600,
@@ -87,7 +88,7 @@ NUM_SAMPLES_PER_ROUND = 30000000
 
 ## Model checkpoint that will be used for inference scripts
 
-MODEL_VERSION = 13
+MODEL_VERSION = 109
 MODEL_DIR = CHECKPOINTS_DIR / f"model{MODEL_VERSION}.pt"
 
 
@@ -96,7 +97,7 @@ MODEL_DIR = CHECKPOINTS_DIR / f"model{MODEL_VERSION}.pt"
 FPS = 5
 NUM_VIDEOS = 1
 TEMPERATURE = 1
-NUM_EPISODES_EVAL = 100
+NUM_EPISODES_EVAL = 500
 
 
 ## ADVANCED SETUP 
