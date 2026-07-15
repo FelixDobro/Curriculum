@@ -43,7 +43,7 @@ class Teacher():
 
     def get_env(self):
         chosen_env = None
-        if random.random() < 0.15:
+        if random.random() < TEACHER_EPSILON:
             chosen_env = random.choice(list(self.env_dict.keys()))
         else:
             safe_lps = self.lps + 1e-6
@@ -113,20 +113,18 @@ if __name__ == "__main__":
             [make_meta_env for _ in range(NUM_ENVS)]
         )
 
-        i = 0
+        
         now = time.time()
-        var = 1
-        mean = 0
         num_episodes_played = 0
         num_samples = 0
+        reset_num = 0
         successes = 0
         
         select_count = {key: 0 for key in CURRICULUM.keys()}
 
-        with tqdm(total=NUM_SAMPLES_PER_ROUND) as pbar:
+        with tqdm(total=NUM_SAMPLES_PER_ROUND, ncols=60) as pbar:
             while num_samples < NUM_SAMPLES_PER_ROUND:
-                i += 1
-
+            
                 states, actions, rewards, dones, old_log_probs, values, infos = [], [], [], [], [], [], []
                 learning_model.eval()
                 
@@ -276,6 +274,7 @@ if __name__ == "__main__":
 
                 #mean_return = rewards[mask].mean()
                 steps_done = max_steps * NUM_ENVS
+                reset_num += steps_done
                 num_samples += steps_done
                 pbar.update(steps_done)
                 successes += infos.sum().item()
@@ -304,13 +303,24 @@ if __name__ == "__main__":
                 tb.add_scalar("Losses/Entropy", np.mean(entropy_losses), global_step=num_samples)
                 tb.add_scalar("Losses/Extrinsic", np.mean(extrinsic_losses), global_step=num_samples)
             
-                    
-                if i % SAVE_EVERY == 0:
+                
+                if reset_num > SAVE_EVERY_SAMPLES:
+                    reset_num = 0
                     torch.save(
                         {
                             "model_state_dict": learning_model.state_dict(),
                             "optimizer_state_dict": optimizer.state_dict(),
-                            "iteration": i,
+                            "iteration": num_samples,
                         },
-                        os.path.join(CHECKPOINTS_DIR, f"model{(i // SAVE_EVERY)}.pt"),
+                        
+                        os.path.join(CHECKPOINTS_DIR, f"_run_{run}", f"model{(num_samples // SAVE_EVERY_SAMPLES)}.pt"),
                     )
+        torch.save(
+            {
+                "model_state_dict": learning_model.state_dict(),
+                "optimizer_state_dict": optimizer.state_dict(),
+                "iteration": num_samples,
+            },
+            
+            os.path.join(CHECKPOINTS_DIR, f"_run_{run}", f"model_last.pt"),
+        )

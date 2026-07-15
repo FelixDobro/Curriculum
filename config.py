@@ -1,6 +1,5 @@
-# paths.py (liegt direkt im Project Root)
-from pathlib import Path
 
+from pathlib import Path
 import torch
 
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -22,9 +21,8 @@ Options are:
 NOTE: This list is both used for every script not only training
     '''
 
-CURRICULUM = ["empty", "multiroom", "key", "locked_room", "easy_memory", "lava_0", "lava_1", "lava_2", "lava_maze_0", "big_multiroom",
+CURRICULUM = ["empty", "multiroom", "key", "locked_room", "easy_memory", "lava_0", "lava_1", "lava_2", "lava_maze_0",
  "lava_maze_1", "maze_1", "lava_goal", "lava_maze_key","lava_maze_key_locked", "obstacles_1", "lava_key_obstacles", "memory_obstacles"]
-
 
 
 ## Define the number of steps for each env after which truncation is reaches (only relevant for
@@ -32,7 +30,7 @@ CURRICULUM = ["empty", "multiroom", "key", "locked_room", "easy_memory", "lava_0
 CURRICULUM_STEPS = {
     "empty": 50,
     "multiroom": 250,
-    "big_multiroom": 1500,
+    "big_multiroom": 2000,
     "key": 250,
     "simple_key": 50,
     "locked_room": 600,
@@ -78,18 +76,17 @@ CURRICULUM_REWARDS = {
 }
 
 PPO_EPOCHS = 5
-
-SAVE_EVERY = 64
-UPDATE_PRINT = 20
-NUM_ENVS = 12
-START_SEED= 2
+NUM_ENVS = 10
+START_SEED = 3
 NUM_ROUNDS = 5
-NUM_SAMPLES_PER_ROUND = 30000000
+NUM_SAMPLES_PER_ROUND = 50_000_000
+SAVE_EVERY_SAMPLES = 10_000_000
 
 ## Model checkpoint that will be used for inference scripts
 
-MODEL_VERSION = 109
-MODEL_DIR = CHECKPOINTS_DIR / f"model{MODEL_VERSION}.pt"
+MODEL_VERSION = "_last"
+RUN =  1
+MODEL_DIR = CHECKPOINTS_DIR / f"_run_{RUN}" / f"model{MODEL_VERSION}.pt"
 
 
 ## Eval settings
@@ -97,11 +94,11 @@ MODEL_DIR = CHECKPOINTS_DIR / f"model{MODEL_VERSION}.pt"
 FPS = 5
 NUM_VIDEOS = 1
 TEMPERATURE = 1
-NUM_EPISODES_EVAL = 500
-
+NUM_EPISODES_EVAL = 50
+ 
 
 ## ADVANCED SETUP 
-
+TEACHER_EPSILON = 0.15
 CHUNK_SIZE = 400
 NUM_ACTIONS = 6
 LEARNING_RATE = 1e-4
