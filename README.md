@@ -3,8 +3,9 @@
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
 ![PyTorch](https://img.shields.io/badge/DL-PyTorch-orange)
 ![Reinforcement Learning](https://img.shields.io/badge/Method-PPO%20%2B%20GRU-purple)
+[![Thesis PDF](https://img.shields.io/badge/Thesis-PDF-red)](assets/Bachelor_Thesis.pdf)
 
-> **Short Summary:** This project implements a Reinforcement Learning agent capable of solving complex, partially observable environments (MiniGrid) by leveraging **Curriculum Learning** and **Memory (GRU)**.
+> **Short Summary:** This repository contains the official code and experimental implementation for the Bachelor's Thesis **["Curriculum Learning in Partially Observable Markov Decision Processes"](assets/Bachelor_Thesis.pdf)** (TU Wien). It implements a Reinforcement Learning agent capable of solving complex, partially observable environments (MiniGrid) by leveraging **Curriculum Learning** and **Memory (GRU)**.
 
 ## The Agent in Action
 
@@ -44,6 +45,18 @@ The combination of Curriculum Learning and Memory yields an extremely versatile 
 | ![Simple Room](assets/Crossing.gif) | ![Key](assets/Huge-Multiroom.gif) |
 | *Crossing Lava* |            *Big maze*             |
 
+## Bachelor's Thesis
+
+This codebase serves as the experimental core and practical implementation of the Bachelor's Thesis:
+
+> **[Curriculum Learning in Partially Observable Markov Decision Processes](assets/Bachelor_Thesis.pdf)** (PDF)  
+> **Author:** Felix Dobrovich  
+> **Degree:** Bachelor of Science in Artificial Intelligence Techniques  
+> **Institution:** TU Wien (Faculty of Informatics)  
+> **Advisor:** Univ.Prof. Dr. Thomas Lukasiewicz  
+> **Date:** July 2026
+
+The complete thesis PDF detailing the theoretical background, curriculum design (including Learning Progress teacher algorithms), and empirical evaluations is available in [assets/Bachelor_Thesis.pdf](assets/Bachelor_Thesis.pdf).
 
 ## Tech Stack
 * **Language:** Python 3.8+
@@ -84,4 +97,18 @@ cd evaluation
 python [script].py
 ```
 
-*Created by Felix Dobrovich - 2025*
+## Citation
+
+If you reference or build upon this project, please cite:
+
+```bibtex
+@bachelorthesis{dobrovich2026curriculum,
+  author       = {Felix Dobrovich},
+  title        = {Curriculum Learning in Partially Observable Markov Decision Processes},
+  school       = {TU Wien},
+  year         = {2026},
+  type         = {Bachelor's Thesis}
+}
+```
+
+*Created by Felix Dobrovich - 2026*
