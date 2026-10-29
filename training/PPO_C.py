@@ -226,7 +226,7 @@ if __name__ == "__main__":
                         policy_logits_list = []
                         extrinsic_val_list = []
 
-                        policy_logits_list, extrinsic_val_list = forward_pass(
+                        policy_logits_list, extrinsic_val_list, learning_hidden = forward_pass(
                             state_chunk=state_chunk,
                             learning_model=learning_model,
                             dones_chunk=dones_chunk,

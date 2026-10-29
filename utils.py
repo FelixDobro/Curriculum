@@ -101,4 +101,4 @@ def forward_pass(state_chunk, learning_model, dones_chunk, learning_hidden):
         
         done_mask = 1.0 - dones_chunk[:, t_step].float().unsqueeze(-1)
         learning_hidden = learning_hidden * done_mask
-    return policy_logits_list, extrinsic_val_list
+    return policy_logits_list, extrinsic_val_list, learning_hidden

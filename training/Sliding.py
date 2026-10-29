@@ -184,7 +184,7 @@ if __name__ == "__main__":
                         extrinsic_chunk = extrinsic_returns[:, c:c + CHUNK_SIZE]
 
         
-                        policy_logits_list, extrinsic_val_list = forward_pass(
+                        policy_logits_list, extrinsic_val_list, learning_hidden = forward_pass(
                             state_chunk=state_chunk,
                             learning_model=learning_model,
                             dones_chunk=dones_chunk,
